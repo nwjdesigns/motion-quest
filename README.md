@@ -20,19 +20,24 @@ For deeper project context (studio model, why this exists, constraints) see [`pr
 | `projects/` | Longer builds, spec work scenes |
 | `notes/` | Learnings, cross-tool translation notes |
 | `references/` | Screenshots, links, inspiration |
-| `logbook/` | One markdown file per session — long-form, with Slack & social copy |
+| `logbook/` | One markdown file per **month** — long-form session entries with Slack & social copy |
 
 ## Logbook
 
-Every session that produces something gets a logbook entry: `logbook/YYYY-MM-DD-slug.md`.
+One file per month: `logbook/YYYY-MM.md` (e.g. `logbook/2026-04.md`). Inside, each session is its own block, **newest at the top**.
 
-Use [`logbook/_template.md`](./logbook/_template.md) as the starting point. Each entry has:
+Each session block has:
 
 - **What I made / How / What clicked** — the substance.
 - **Slack post** — short, casual, drop-into-channel ready.
 - **Social caption** — hook + body + tags, LinkedIn-friendly, framed for the EES audience.
 
-The Quest Log below is the ledger (one row per session). The logbook is the long-form. Link the row's **Output** column to its logbook entry.
+Workflow:
+1. New month? Copy [`logbook/_template.md`](./logbook/_template.md) to `logbook/YYYY-MM.md`.
+2. New session? Open the current month's file, add a new `## YYYY-MM-DD — Title` block at the top using the same structure as the template.
+3. Add a row to the **Quest Log** table below; link the **Output** column to the logbook section (e.g. `logbook/2026-04.md#2026-04-30--bouncing-ball`).
+
+The Quest Log table is the ledger. The logbook is the long-form. Year-end review = open 12 files, not 200.
 
 ## Quest Log
 
