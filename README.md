@@ -20,6 +20,19 @@ For deeper project context (studio model, why this exists, constraints) see [`pr
 | `projects/` | Longer builds, spec work scenes |
 | `notes/` | Learnings, cross-tool translation notes |
 | `references/` | Screenshots, links, inspiration |
+| `logbook/` | One markdown file per session — long-form, with Slack & social copy |
+
+## Logbook
+
+Every session that produces something gets a logbook entry: `logbook/YYYY-MM-DD-slug.md`.
+
+Use [`logbook/_template.md`](./logbook/_template.md) as the starting point. Each entry has:
+
+- **What I made / How / What clicked** — the substance.
+- **Slack post** — short, casual, drop-into-channel ready.
+- **Social caption** — hook + body + tags, LinkedIn-friendly, framed for the EES audience.
+
+The Quest Log below is the ledger (one row per session). The logbook is the long-form. Link the row's **Output** column to its logbook entry.
 
 ## Quest Log
 
