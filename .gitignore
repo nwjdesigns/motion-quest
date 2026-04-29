@@ -1,0 +1,56 @@
+# --- macOS ---
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+Icon?
+
+# --- Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Cavalry ---
+*.cvbak
+*.cv-autosave
+*.cv-cache
+
+# --- After Effects ---
+*.aep.bak
+*.aepx~
+Adobe After Effects Auto-Save/
+*.cfa
+*.pek
+*.mpgindex
+*.tmp
+
+# --- Cinema 4D ---
+*.c4d.bak
+*.c4d~
+.c4d_prefs/
+
+# --- Blender ---
+*.blend1
+*.blend2
+*.blend3
+*.blend@
+
+# --- General large/binary outputs ---
+# Not blanket-ignored — sometimes you DO want to commit a render or PSD.
+# Uncomment when projects start producing heavy artifacts, or move to Git LFS.
+#
+# renders/
+# *.mov
+# *.mp4
+# *.mkv
+# *.exr
+# *.dpx
+# *.psd
+# *.psb
+# *.ai
+# *.tiff
+# *.tif
