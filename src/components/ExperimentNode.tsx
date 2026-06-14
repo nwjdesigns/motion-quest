@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { useLoader, useFrame } from '@react-three/fiber';
 import { TextureLoader, Vector3 } from 'three';
 import type { Mesh } from 'three';
 import type { ThreeEvent } from '@react-three/fiber';
 import type { Position3D } from '../lib/constellation';
+import { PixelationMaterial } from './PixelationMaterial';
 
 interface ExperimentNodeProps {
   position: Position3D;
@@ -31,6 +32,15 @@ export function ExperimentNode({
   const thumbnailUrl = `${base}/cavalry/${thumbnail}`;
 
   const texture = useLoader(TextureLoader, thumbnailUrl);
+
+  const material = useMemo(() => {
+    const mat = new PixelationMaterial();
+    mat.uniforms.uTexture.value = texture;
+    if (texture.image) {
+      mat.uniforms.uResolution.value.set(texture.image.width, texture.image.height);
+    }
+    return mat;
+  }, [texture]);
 
   useFrame((_, delta) => {
     if (!meshRef.current) return;
@@ -67,15 +77,17 @@ export function ExperimentNode({
       ref={meshRef}
       position={[position.x, position.y, position.z]}
       onClick={handleClick}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
+      onPointerOver={() => {
+        setHovered(true);
+        material.uniforms.uOpacity.value = 1;
+      }}
+      onPointerOut={() => {
+        setHovered(false);
+        material.uniforms.uOpacity.value = 0.85;
+      }}
+      material={material}
     >
       <planeGeometry args={[1.6, 0.9]} />
-      <meshBasicMaterial
-        map={texture}
-        transparent
-        opacity={hovered ? 1 : 0.85}
-      />
     </mesh>
   );
 }

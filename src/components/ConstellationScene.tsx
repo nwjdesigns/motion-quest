@@ -1,6 +1,8 @@
 import { Suspense, useState, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from './OrbitControls';
+import { AmbientParticles } from './AmbientParticles';
+import { ConnectingLines } from './ConnectingLines';
 import {
   computeConstellationLayout,
   type ConstellationInput,
@@ -72,6 +74,9 @@ export default function ConstellationScene({
             />
           ))}
         </Suspense>
+
+        <ConnectingLines positions={positions} />
+        <AmbientParticles />
 
         <OrbitControls
           enablePan={false}
