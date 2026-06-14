@@ -1,21 +1,29 @@
-# Next Session: Build Cavalry Lab
+# Next Session: Continue Cavalry Lab Build
 
 ## Context
 
-The Cavalry Lab experiments site has been fully designed and scoped. PRD at `prd-cavalry-lab.md`. 13 vertical slice issues on GitHub (nwjdesigns/motion-quest #1-#13).
+Issues #1 and #2 shipped. Site live at https://nwjdesigns.github.io/motion-quest/. Repo is public. 14 Vitest tests passing. Astro 6, React, content collection, GitHub Pages deploy, Cavalry WASM player with coi-serviceworker all working.
 
 ## What to do
 
-Start building with TDD. Begin with issue #1: Astro project + content collection + GitHub Pages deploy. This is the critical path - issues #2, #4, and #13 all depend on it.
+Pick up from issue #3 or #4. Both are unblocked:
 
-Read the PRD first, then the issue body for #1. The build sequence in the PRD maps to the issue dependency graph.
+- **Issue #3** (Stripe link + prev/next nav): quick win, extends the experiment page. Stripe link conditional rendering and chronological prev/next navigation.
+- **Issue #4** (3D homepage): the core experience. R3F canvas, constellation layout, orbit controls, click-to-navigate. Big slice.
 
-## Key references
+Read the issue body before starting. Continue with TDD.
 
-- Cavalry web player spike (proven integration): `/Users/nwj/Desktop/2026/MR/CT/MAKERS TABLE/cavalry-spike/`
-- `CavalryBackground.tsx` React component already exists there
-- COOP/COEP headers are the highest-risk unknown (issue #2) - resolve early
+## Current state
 
-## Decisions already locked
+- `public/cavalry/player.html` loads scenes via `?scene=` query param
+- `src/pages/experiments/[...slug].astro` embeds player in iframe
+- `src/schemas/experiment.ts` defines the content collection schema (tested)
+- `src/lib/player.ts` builds player URLs (tested)
+- `coi-serviceworker.js` handles COOP/COEP on GitHub Pages
+- Test scene is `test_07.cv` (falloff) renamed to `particle-grid.cv`
 
-20 design decisions in the PRD decisions table. 7 test seams defined. Don't re-grill or re-plan. Build.
+## Known rough edges
+
+- Player auto-binds cursor to Control Centre double2/int2 attributes only. Scenes need CC attributes exposed in Cavalry for interactivity to work.
+- The dummy experiment uses a test scene, not a real Noah export.
+- Site has no styling, no 3D homepage, no theme. Expected at issue 2 of 13.
