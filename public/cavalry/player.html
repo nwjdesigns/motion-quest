@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cavalry Player</title>
+    <script src="../coi-serviceworker.js"></script>
+    <style>
+      html, body { margin: 0; height: 100%; background: #0a0a0a; overflow: hidden; }
+      #canvas { display: block; width: 100vw; height: 100vh; object-fit: contain; }
+      #status {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        font: 14px/1.5 ui-monospace, Menlo, monospace; color: #666;
+        text-align: center;
+      }
+      #status.error { color: #ff6b6b; }
+      #status.hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div id="status">Loading...</div>
+
+    <script type="module">
+      const params = new URLSearchParams(location.search);
+      const sceneUrl = params.get('scene');
+      const statusEl = document.getElementById('status');
+      const canvas = document.getElementById('canvas');
+
+      function showError(msg) {
+        statusEl.textContent = msg;
+        statusEl.className = 'error';
+      }
+
+      if (!sceneUrl) {
+        showError('No scene specified. Use ?scene=path/to/scene.cv');
+      } else {
+        boot(sceneUrl);
+      }
+
+      async function boot(sceneUrl) {
+        try {
+          statusEl.textContent = 'Loading WASM...';
+
+          const basePath = new URL('.', import.meta.url).pathname;
+          const wasmBase = basePath + 'wasm-lib/';
+
+          const wasm = await import(wasmBase + 'CavalryWasm.js');
+          const Module = await wasm.default({
+            locateFile: (path) => wasmBase + path,
+            print: (t) => console.log('[cavalry]', t),
+            printErr: (t) => console.error('[cavalry]', t),
+          });
+
+          statusEl.textContent = 'Loading scene...';
+
+          const sceneBytes = new Uint8Array(await (await fetch(sceneUrl)).arrayBuffer());
+          Module.FS.writeFile('scene.cv', sceneBytes);
+          const player = Module.Cavalry.MakeWithPath('scene.cv');
+
+          const scene = player.getSceneResolution();
+          canvas.width = scene.width;
+          canvas.height = scene.height;
+          const surface = Module.makeWebGLSurfaceFromElement(canvas, scene.width, scene.height);
+
+          console.log(`[player] crossOriginIsolated: ${self.crossOriginIsolated}`);
+          console.log(`[player] resolution: ${scene.width}x${scene.height}`);
+
+          const pending = Module.pendingAssets || [];
+          for (const asset of pending) {
+            try {
+              const assetDir = sceneUrl.substring(0, sceneUrl.lastIndexOf('/'));
+              const bytes = new Uint8Array(await (await fetch(`${assetDir}/${asset.filename}`)).arrayBuffer());
+              Module.FS.writeFile(asset.filename, bytes);
+              if (asset.type === 'image') player.replaceImageAsset(asset.filename, asset.assetId);
+              if (asset.type === 'font') {
+                Module.loadFont(asset.filename, asset.assetId);
+                player.replaceFontAsset(asset.filename, asset.assetId);
+              }
+            } catch (e) {
+              console.warn(`[player] failed to load asset ${asset.filename}:`, e);
+            }
+          }
+
+          player.render(surface);
+          player.setLoop(true);
+          player.play();
+
+          statusEl.className = 'hidden';
+
+          const cursor = { x: 0.5, y: 0.5 };
+          window.addEventListener('pointermove', (e) => {
+            cursor.x = e.clientX / window.innerWidth;
+            cursor.y = e.clientY / window.innerHeight;
+          });
+
+          const compId = player.getActiveComp();
+          const ccAttrs = (() => {
+            try {
+              const v = player.getControlCentreAttributes(compId);
+              if (typeof v?.size === 'function') return Array.from({ length: v.size() }, (_, i) => v.get(i));
+              if (Array.isArray(v)) return v;
+              return [];
+            } catch { return []; }
+          })();
+
+          const posAttrs = [];
+          for (const path of ccAttrs) {
+            const [layerId, ...rest] = path.split('.');
+            const attrId = rest.join('.');
+            try {
+              const def = player.getAttributeDefinition(layerId, attrId);
+              if (def.type === 'double2' || def.type === 'int2') {
+                posAttrs.push({ layerId, attrId, isInt: def.type === 'int2' });
+              }
+            } catch {}
+          }
+
+          (function tick(ts) {
+            for (const attr of posAttrs) {
+              const x = (cursor.x - 0.5) * scene.width;
+              const y = (0.5 - cursor.y) * scene.height;
+              const val = attr.isInt ? [Math.round(x), Math.round(y)] : [x, y];
+              try { player.setAttribute(attr.layerId, attr.attrId, val); } catch {}
+            }
+            player.tick(surface, ts);
+            requestAnimationFrame(tick);
+          })(0);
+
+        } catch (err) {
+          showError('Failed to load: ' + (err?.message || err));
+          console.error(err);
+        }
+      }
+    </script>
+  </body>
+</html>

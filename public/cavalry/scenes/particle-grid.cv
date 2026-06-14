@@ -1,0 +1,566 @@
+{
+ "activeComp": "compNode#1",
+ "connections": [
+  { "from": "visibilityCurve#8.out", "to": "falloff#1.on" },
+  { "from": "visibilityCurve#6.out", "to": "basicShape#1.on" },
+  { "from": "rectangleShape#1.id", "to": "basicShape#1.generator" },
+  { "from": "colorMaterial#7.id", "to": "basicShape#1.material" },
+  { "from": "basicShape#1.id", "to": "duplicator#3.shapes.0" },
+  { "from": "gridDistribution#3.id", "to": "duplicator#3.generator" },
+  { "from": "oscillator#3.id", "to": "duplicator#3.shapeScale.y" },
+  { "from": "visibilityCurve#7.out", "to": "duplicator#3.on" },
+  { "from": "duplicator#3.shapeScale.y", "to": "duplicator#3.shapeScale.x" },
+  { "from": "compNode#1.time", "to": "visibilityCurve#7.time" },
+  { "from": "compNode#1.outActiveAnimationLayer", "to": "visibilityCurve#7.activeAnimationLayer" },
+  { "from": "keyframe#14.id", "to": "visibilityCurve#7.keyframes.1" },
+  { "from": "keyframe#13.id", "to": "visibilityCurve#7.keyframes.0" },
+  { "from": "compNode#1.outActiveAnimationLayer", "to": "visibilityCurve#6.activeAnimationLayer" },
+  { "from": "compNode#1.time", "to": "visibilityCurve#6.time" },
+  { "from": "keyframe#12.id", "to": "visibilityCurve#6.keyframes.1" },
+  { "from": "keyframe#11.id", "to": "visibilityCurve#6.keyframes.0" },
+  { "from": "compNode#1.outActiveAnimationLayer", "to": "visibilityCurve#8.activeAnimationLayer" },
+  { "from": "keyframe#15.id", "to": "visibilityCurve#8.keyframes.0" },
+  { "from": "compNode#1.time", "to": "visibilityCurve#8.time" },
+  { "from": "keyframe#16.id", "to": "visibilityCurve#8.keyframes.1" },
+  { "from": "compNode#1.time", "to": "oscillator#3.time" },
+  { "from": "compNode#1.fps", "to": "oscillator#3.fps" },
+  { "from": "falloff#1.id", "to": "oscillator#3.falloffs.0.id" }
+ ],
+ "controlCenter": {
+  "compNode#1": {
+   "attributes": [
+    { "path": "compNode#1.backgroundColor" },
+    { "path": "colorMaterial#7.materialColor" },
+    { "path": "falloff#1.position" }
+   ],
+   "footerScript": "",
+   "headerScript": ""
+  }
+ },
+ "dependencyGraph": {
+  "tabs": [
+   { "compId": "compNode#1", "name": "", "positions": [] }
+  ]
+ },
+ "labelColors": "Pastel",
+ "nodeMeta": [
+  {
+   "children": [ "hiddenFolder#8" ],
+   "nodeId": "falloff#1"
+  },
+  {
+   "children": [ "hiddenFolder#6" ],
+   "nodeId": "basicShape#1"
+  },
+  {
+   "children": [ "basicShape#1", "hiddenFolder#7" ],
+   "nodeId": "duplicator#3"
+  },
+  {
+   "children": [ "falloff#1", "oscillator#3", "duplicator#3" ],
+   "nodeId": "compNode#1"
+  },
+  {
+   "children": [ "keyframe#14", "keyframe#13" ],
+   "nodeId": "visibilityCurve#7"
+  },
+  {
+   "children": [ "keyframe#12", "keyframe#11" ],
+   "nodeId": "visibilityCurve#6"
+  },
+  {
+   "children": [ "keyframe#16", "keyframe#15" ],
+   "nodeId": "visibilityCurve#8"
+  },
+  {
+   "children": [ "colorArray#1" ],
+   "nodeId": "paletteContainer#1"
+  },
+  {
+   "children": [ "visibilityCurve#8" ],
+   "nodeId": "hiddenFolder#8"
+  },
+  {
+   "children": [ "rectangleShape#1", "superEllipseShape#1", "motionBlurFilter#6", "strokeMaterial#6", "polygonShape#1", "colorMaterial#7", "visibilityCurve#6" ],
+   "nodeId": "hiddenFolder#6"
+  },
+  {
+   "children": [ "motionBlurFilter#7", "strokeMaterial#7", "colorMaterial#8", "gridDistribution#3", "visibilityCurve#7" ],
+   "nodeId": "hiddenFolder#7"
+  },
+  {
+   "children": [ "compNode#1" ],
+   "nodeId": "asset#1"
+  }
+ ],
+ "nodes": [
+  {
+   "attributes": {
+    "colorId": { "value": 14, "varType": "int" },
+    "niceName": { "value": "Motion Blur", "varType": "string" },
+    "showInProjectWindow": { "value": false, "varType": "bool" },
+    "uuid": { "value": "417db140-4ac4-4757-97b6-1787fa2adbf0", "varType": "string" }
+   },
+   "nodeId": "motionBlurFilter#6",
+   "nodeType": "motionBlurFilter"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 14, "varType": "int" },
+    "niceName": { "value": "Motion Blur 2", "varType": "string" },
+    "showInProjectWindow": { "value": false, "varType": "bool" },
+    "uuid": { "value": "e0c2dbec-7059-4d0e-87fd-3a2ce8177aae", "varType": "string" }
+   },
+   "nodeId": "motionBlurFilter#7",
+   "nodeType": "motionBlurFilter"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 9, "varType": "int" },
+    "graph": {
+     "list": [
+      {
+       "compound": {
+        "interpolation": { "value": 1, "varType": "int" },
+        "left": {
+         "value": { "x": -0.5, "y": 0.0 },
+         "varType": "double2"
+        },
+        "position": {
+         "value": { "x": 0.0, "y": 1.0 },
+         "varType": "double2"
+        },
+        "right": {
+         "value": { "x": 0.5, "y": 0.0 },
+         "varType": "double2"
+        }
+       }
+      },
+      {
+       "compound": {
+        "interpolation": { "value": 1, "varType": "int" },
+        "left": {
+         "value": { "x": -0.5, "y": 0.0 },
+         "varType": "double2"
+        },
+        "position": {
+         "value": { "x": 1.0, "y": 0.0 },
+         "varType": "double2"
+        },
+        "right": {
+         "value": { "x": 0.5, "y": 0.0 },
+         "varType": "double2"
+        }
+       }
+      }
+     ]
+    },
+    "niceName": { "value": "Falloff [Oscillator [Shape Scale.Y]]", "varType": "string" },
+    "position": {
+     "value": { "x": 532.2079467773438, "y": -271.94622802734375, "z": 0.0 },
+     "varType": "double3"
+    },
+    "uuid": { "value": "a78f435d-380f-43af-9768-b1d0666a4e6e", "varType": "string" }
+   },
+   "nodeId": "falloff#1",
+   "nodeType": "falloff"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 2, "varType": "int" },
+    "hidden": { "value": true, "varType": "bool" },
+    "niceName": { "value": "Super Ellipse Shape", "varType": "string" },
+    "position": {
+     "value": { "x": -290.66461181640625, "y": -21.56182861328125, "z": 0.0 },
+     "varType": "double3"
+    },
+    "scale": {
+     "value": { "x": 0.4882354579017642, "y": 1.0 },
+     "varType": "double2"
+    },
+    "uuid": { "value": "f59dacd7-4071-4229-a85c-aa1ecdb5eeff", "varType": "string" }
+   },
+   "nodeId": "basicShape#1",
+   "nodeType": "basicShape"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 2, "varType": "int" },
+    "niceName": { "value": "Duplicator", "varType": "string" },
+    "shapeScale": {
+     "value": { "x": 0.0, "y": 0.0 },
+     "varType": "double2"
+    },
+    "shapes": {
+     "list": [
+      { "varType": "nodeId" }
+     ]
+    },
+    "uuid": { "value": "8f193768-5f00-436d-8cbc-f87472aae173", "varType": "string" }
+   },
+   "nodeId": "duplicator#3",
+   "nodeType": "duplicator"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 3, "varType": "int" },
+    "niceName": { "value": "Composition 1", "varType": "string" },
+    "uuid": { "value": "b8e7eb10-f9ff-4102-b38d-aa8e5b598e7b", "varType": "string" }
+   },
+   "nodeId": "compNode#1",
+   "nodeType": "compNode"
+  },
+  {
+   "attributes": {
+    "keyframes": {
+     "list": [
+      { "varType": "nodeId" },
+      { "varType": "nodeId" }
+     ]
+    }
+   },
+   "nodeId": "visibilityCurve#7",
+   "nodeType": "visibilityCurve"
+  },
+  {
+   "attributes": {
+    "keyframes": {
+     "list": [
+      { "varType": "nodeId" },
+      { "varType": "nodeId" }
+     ]
+    }
+   },
+   "nodeId": "visibilityCurve#6",
+   "nodeType": "visibilityCurve"
+  },
+  {
+   "attributes": {
+    "keyframes": {
+     "list": [
+      { "varType": "nodeId" },
+      { "varType": "nodeId" }
+     ]
+    }
+   },
+   "nodeId": "visibilityCurve#8",
+   "nodeType": "visibilityCurve"
+  },
+  { "nodeId": "paletteContainer#1", "nodeType": "paletteContainer" },
+  {
+   "attributes": {
+    "niceName": { "value": "Default Scene Palette", "varType": "string" },
+    "uuid": { "value": "3e9abbb6-3904-41f6-83ca-167ead478ad9", "varType": "string" }
+   },
+   "nodeId": "colorArray#1",
+   "nodeType": "colorArray"
+  },
+  { "nodeId": "renderQueue#1", "nodeType": "renderQueue" },
+  {
+   "attributes": {
+    "niceName": { "value": "Render Manager", "varType": "string" },
+    "uuid": { "value": "cf3058b9-3c85-495f-91b7-92f14f0d3bfe", "varType": "string" }
+   },
+   "nodeId": "dynamicIndexManager#1",
+   "nodeType": "dynamicIndexManager"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 6, "varType": "int" },
+    "gradient": {
+     "list": [
+      {
+       "compound": {
+        "color": {
+         "value": { "a": 255, "b": 0, "g": 0, "r": 0 },
+         "varType": "color"
+        }
+       }
+      },
+      {
+       "compound": {
+        "color": {
+         "value": { "a": 255, "b": 255, "g": 255, "r": 255 },
+         "varType": "color"
+        },
+        "position": { "value": 1.0, "varType": "double" }
+       }
+      }
+     ]
+    },
+    "niceName": { "value": "Stroke", "varType": "string" },
+    "showInProjectWindow": { "value": false, "varType": "bool" },
+    "uuid": { "value": "6875fde1-7c85-450f-be73-8796d720b6f0", "varType": "string" }
+   },
+   "nodeId": "strokeMaterial#6",
+   "nodeType": "strokeMaterial"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 9, "varType": "int" },
+    "niceName": { "value": "Super Ellipse", "varType": "string" },
+    "push": { "value": 0.6, "varType": "double" },
+    "radius": { "value": 30.0, "varType": "double" },
+    "uuid": { "value": "075dade1-bc03-4295-9886-c1909cf7c360", "varType": "string" }
+   },
+   "nodeId": "superEllipseShape#1",
+   "nodeType": "superEllipseShape"
+  },
+  {
+   "attributes": {
+    "niceName": { "value": "subUINodes", "varType": "string" },
+    "uuid": { "value": "e9bad3fa-d591-4573-8c66-a06e5d81d32b", "varType": "string" }
+   },
+   "nodeId": "hiddenFolder#8",
+   "nodeType": "hiddenFolder"
+  },
+  {
+   "attributes": {
+    "data": {
+     "value": { "numValue": 1.0 },
+     "varType": "keyData"
+    },
+    "uuid": { "value": "a43504dc-ac0d-462c-aa40-65c33f888d51", "varType": "string" }
+   },
+   "nodeId": "keyframe#15",
+   "nodeType": "keyframe"
+  },
+  {
+   "attributes": {
+    "data": {
+     "value": { "numValue": -1.0 },
+     "varType": "keyData"
+    },
+    "timeOffset": { "value": 250.0, "varType": "double" },
+    "uuid": { "value": "84340ef3-071c-446e-8730-f8188ee13703", "varType": "string" }
+   },
+   "nodeId": "keyframe#16",
+   "nodeType": "keyframe"
+  },
+  {
+   "attributes": {
+    "data": {
+     "value": { "numValue": 1.0 },
+     "varType": "keyData"
+    },
+    "uuid": { "value": "9f862f27-b717-4e11-a4bb-5de12f3cde21", "varType": "string" }
+   },
+   "nodeId": "keyframe#11",
+   "nodeType": "keyframe"
+  },
+  {
+   "attributes": {
+    "niceName": { "value": "subUINodes", "varType": "string" },
+    "uuid": { "value": "9ef58531-548d-4154-81a4-52420b306d88", "varType": "string" }
+   },
+   "nodeId": "hiddenFolder#6",
+   "nodeType": "hiddenFolder"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 9, "varType": "int" },
+    "niceName": { "value": "Polygon", "varType": "string" },
+    "uuid": { "value": "e34cf0ce-5e96-4977-a42b-1563c02a696a", "varType": "string" }
+   },
+   "nodeId": "polygonShape#1",
+   "nodeType": "polygonShape"
+  },
+  {
+   "attributes": {
+    "data": {
+     "value": { "numValue": -1.0 },
+     "varType": "keyData"
+    },
+    "timeOffset": { "value": 250.0, "varType": "double" },
+    "uuid": { "value": "20d9290d-32f6-4a5b-96a6-995fc7f77ff7", "varType": "string" }
+   },
+   "nodeId": "keyframe#12",
+   "nodeType": "keyframe"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 6, "varType": "int" },
+    "niceName": { "value": "Fill", "varType": "string" },
+    "showInProjectWindow": { "value": false, "varType": "bool" },
+    "uuid": { "value": "a9a2fbaf-56f6-431f-b690-6b0ffdac43e3", "varType": "string" }
+   },
+   "nodeId": "colorMaterial#7",
+   "nodeType": "colorMaterial"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 9, "varType": "int" },
+    "count": {
+     "value": { "x": 26, "y": 20 },
+     "varType": "int2"
+    },
+    "niceName": { "value": "Grid", "varType": "string" },
+    "size": {
+     "value": { "x": 1920.0, "y": 1080.0 },
+     "varType": "double2"
+    },
+    "uuid": { "value": "9213b94c-2d77-443e-98b6-a280073d18ff", "varType": "string" }
+   },
+   "nodeId": "gridDistribution#3",
+   "nodeType": "gridDistribution"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 6, "varType": "int" },
+    "gradient": {
+     "list": [
+      {
+       "compound": {
+        "color": {
+         "value": { "a": 255, "b": 0, "g": 0, "r": 0 },
+         "varType": "color"
+        }
+       }
+      },
+      {
+       "compound": {
+        "color": {
+         "value": { "a": 255, "b": 255, "g": 255, "r": 255 },
+         "varType": "color"
+        },
+        "position": { "value": 1.0, "varType": "double" }
+       }
+      }
+     ]
+    },
+    "niceName": { "value": "Stroke 2", "varType": "string" },
+    "showInProjectWindow": { "value": false, "varType": "bool" },
+    "uuid": { "value": "a1f297e0-05e0-496c-b99a-1f676971d541", "varType": "string" }
+   },
+   "nodeId": "strokeMaterial#7",
+   "nodeType": "strokeMaterial"
+  },
+  {
+   "attributes": {
+    "data": {
+     "value": { "numValue": -1.0 },
+     "varType": "keyData"
+    },
+    "timeOffset": { "value": 250.0, "varType": "double" },
+    "uuid": { "value": "f293ecfc-2c5e-42ee-b740-cfbc20a9e194", "varType": "string" }
+   },
+   "nodeId": "keyframe#14",
+   "nodeType": "keyframe"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 6, "varType": "int" },
+    "niceName": { "value": "Fill 2", "varType": "string" },
+    "showInProjectWindow": { "value": false, "varType": "bool" },
+    "uuid": { "value": "4a01ad32-fc05-48a6-a631-7eec75b54106", "varType": "string" }
+   },
+   "nodeId": "colorMaterial#8",
+   "nodeType": "colorMaterial"
+  },
+  {
+   "attributes": {
+    "data": {
+     "value": { "numValue": 1.0 },
+     "varType": "keyData"
+    },
+    "uuid": { "value": "cb24d27a-2cdb-49f6-bfc0-5497e4d9fbea", "varType": "string" }
+   },
+   "nodeId": "keyframe#13",
+   "nodeType": "keyframe"
+  },
+  {
+   "attributes": {
+    "niceName": { "value": "subUINodes", "varType": "string" },
+    "uuid": { "value": "496e0888-c480-4186-ad99-5b61ef09fccd", "varType": "string" }
+   },
+   "nodeId": "hiddenFolder#7",
+   "nodeType": "hiddenFolder"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 9, "varType": "int" },
+    "dimensions": {
+     "value": { "x": 10.0, "y": 200.0 },
+     "varType": "double2"
+    },
+    "niceName": { "value": "Rectangle", "varType": "string" },
+    "uuid": { "value": "67cfe863-d6f5-4927-97f4-ece46d6efd7f", "varType": "string" }
+   },
+   "nodeId": "rectangleShape#1",
+   "nodeType": "rectangleShape"
+  },
+  {
+   "attributes": {
+    "uuid": { "value": "3e3b7755-cb3b-4b4d-bd90-843d97f7db4c", "varType": "string" }
+   },
+   "nodeId": "asset#1",
+   "nodeType": "asset"
+  },
+  {
+   "attributes": {
+    "colorId": { "value": 4, "varType": "int" },
+    "falloffs": {
+     "list": [ {} ]
+    },
+    "fps": { "value": 25.0, "varType": "double" },
+    "frequency": { "value": 0.2, "varType": "double" },
+    "graph": {
+     "list": [
+      {
+       "compound": {
+        "interpolation": { "value": 1, "varType": "int" },
+        "right": {
+         "value": { "x": 0.25, "y": 0.0 },
+         "varType": "double2"
+        }
+       }
+      },
+      {
+       "compound": {
+        "interpolation": { "value": 1, "varType": "int" },
+        "left": {
+         "value": { "x": -0.25, "y": 0.0 },
+         "varType": "double2"
+        },
+        "position": {
+         "value": { "x": 0.5, "y": 1.0 },
+         "varType": "double2"
+        },
+        "right": {
+         "value": { "x": 0.25, "y": 0.0 },
+         "varType": "double2"
+        }
+       }
+      },
+      {
+       "compound": {
+        "interpolation": { "value": 1, "varType": "int" },
+        "left": {
+         "value": { "x": -0.25, "y": 0.0 },
+         "varType": "double2"
+        },
+        "position": {
+         "value": { "x": 1.0, "y": 0.0 },
+         "varType": "double2"
+        }
+       }
+      }
+     ]
+    },
+    "maximum": { "value": 0.0, "varType": "double" },
+    "minimum": { "value": 1.0, "varType": "double" },
+    "niceName": { "value": "Oscillator [Shape Scale.Y]", "varType": "string" },
+    "strength": { "value": 245.0, "varType": "double" },
+    "uuid": { "value": "9198cc19-0efc-49f5-bebd-1d1673cfa3cb", "varType": "string" }
+   },
+   "nodeId": "oscillator#3",
+   "nodeType": "oscillator"
+  }
+ ],
+ "other": {
+  "viewport": { "backgroundMode": 0, "rulers": {} }
+ },
+ "referenceData": {},
+ "resourceType": "cavalry.scenefile",
+ "version": "1.0.62"
+}
