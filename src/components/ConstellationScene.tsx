@@ -1,4 +1,4 @@
-import { Suspense, useState, useMemo, useEffect } from 'react';
+import { Suspense, useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from './OrbitControls';
 import { AmbientParticles } from './AmbientParticles';
@@ -13,6 +13,8 @@ import { ExperimentNode } from './ExperimentNode';
 import { UIPanel, type ExternalLink } from './UIPanel';
 import { ThemeProvider, useTheme } from './ThemeContext';
 import { resolveInitialTheme, type Theme } from '../lib/theme';
+import { deserializeCameraState } from '../lib/camera-state';
+import { interpolateRect, type ScreenRect } from '../lib/morph';
 
 export type LayoutMode = 'constellation' | 'grid' | 'spiral';
 
@@ -35,21 +37,77 @@ function SceneBackground() {
   return <color attach="background" args={[colors.background]} />;
 }
 
+function MorphOverlay({
+  startRect,
+  slug,
+  baseUrl,
+}: {
+  startRect: ScreenRect;
+  slug: string;
+  baseUrl: string;
+}) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = overlayRef.current;
+    if (!el) return;
+
+    el.style.left = `${startRect.x}px`;
+    el.style.top = `${startRect.y}px`;
+    el.style.width = `${startRect.width}px`;
+    el.style.height = `${startRect.height}px`;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.style.left = '0px';
+        el.style.top = '0px';
+        el.style.width = '100vw';
+        el.style.height = '100vh';
+      });
+    });
+
+    const onEnd = () => {
+      window.location.href = `${baseUrl}/experiments/${slug}`;
+    };
+    el.addEventListener('transitionend', onEnd, { once: true });
+
+    const fallback = setTimeout(onEnd, 500);
+    return () => clearTimeout(fallback);
+  }, [startRect, slug, baseUrl]);
+
+  return (
+    <div
+      ref={overlayRef}
+      style={{
+        position: 'fixed',
+        background: 'var(--mq-bg, #0a0a0a)',
+        transition: 'all 350ms cubic-bezier(0.4, 0, 0.2, 1)',
+        zIndex: 9999,
+        pointerEvents: 'none',
+        borderRadius: '4px',
+      }}
+    />
+  );
+}
+
 function ThemedScene({
   experiments,
   baseUrl,
   initialLayout,
   links,
   workWithMeUrl,
+  initialCameraState,
 }: {
   experiments: ExperimentData[];
   baseUrl: string;
   initialLayout: LayoutMode;
   links: ExternalLink[];
   workWithMeUrl?: string;
+  initialCameraState: { position: [number, number, number]; target: { x: number; y: number; z: number } } | null;
 }) {
   const [layout, setLayout] = useState<LayoutMode>(initialLayout);
   const { theme, colors, toggleTheme } = useTheme();
+  const [morphState, setMorphState] = useState<{ slug: string; rect: ScreenRect } | null>(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -72,10 +130,16 @@ function ThemedScene({
     }
   }, [inputs, layout]);
 
+  const handleNavigate = useCallback((slug: string, rect: ScreenRect) => {
+    setMorphState({ slug, rect });
+  }, []);
+
+  const cameraPosition: [number, number, number] = initialCameraState?.position ?? [0, 0, 12];
+
   return (
     <div style={{ width: '100vw', height: '100vh', background: colors.background, position: 'relative' }}>
       <Canvas
-        camera={{ position: [0, 0, 12], fov: 60 }}
+        camera={{ position: cameraPosition, fov: 60 }}
         style={{ width: '100%', height: '100%' }}
       >
         <SceneBackground />
@@ -90,6 +154,7 @@ function ThemedScene({
               title={exp.title}
               slug={exp.id}
               baseUrl={baseUrl}
+              onNavigate={handleNavigate}
             />
           ))}
         </Suspense>
@@ -101,6 +166,7 @@ function ThemedScene({
           enablePan={false}
           minDistance={3}
           maxDistance={30}
+          initialTarget={initialCameraState?.target}
         />
       </Canvas>
 
@@ -112,6 +178,14 @@ function ThemedScene({
         theme={theme}
         onThemeToggle={toggleTheme}
       />
+
+      {morphState && (
+        <MorphOverlay
+          startRect={morphState.rect}
+          slug={morphState.slug}
+          baseUrl={baseUrl}
+        />
+      )}
     </div>
   );
 }
@@ -131,6 +205,17 @@ export default function ConstellationScene({
     return resolveInitialTheme(stored, prefersDark);
   }, []);
 
+  const initialCameraState = useMemo(() => {
+    const raw = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('mq-camera') : null;
+    if (!raw) return null;
+    const state = deserializeCameraState(raw);
+    if (!state) return null;
+    return {
+      position: [state.position.x, state.position.y, state.position.z] as [number, number, number],
+      target: state.target,
+    };
+  }, []);
+
   return (
     <ThemeProvider initialTheme={initial}>
       <ThemedScene
@@ -139,6 +224,7 @@ export default function ConstellationScene({
         initialLayout={initialLayout}
         links={links}
         workWithMeUrl={workWithMeUrl}
+        initialCameraState={initialCameraState}
       />
     </ThemeProvider>
   );
