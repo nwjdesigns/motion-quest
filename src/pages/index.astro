@@ -1,0 +1,16 @@
+---
+import { getCollection } from 'astro:content';
+
+const experiments = await getCollection('experiments');
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Cavalry Lab</title>
+  </head>
+  <body>
+    <h1>Cavalry Lab</h1>
+    <p>{experiments.length} experiments</p>
+  </body>
+</html>
