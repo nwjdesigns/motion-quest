@@ -4,7 +4,7 @@
 
 All 13 build issues (#1-#13) are DONE. Site live at https://nwjdesigns.github.io/motion-quest/. Repo public. **166 Vitest tests across 20 files** (the old "197/24" figure was inflated by vitest scanning duplicate test copies inside `.claude/worktrees/`, now cleaned up). Astro 6, React, R3F (three.js directly, no drei), content collection, GitHub Pages deploy, Cavalry WASM player with coi-serviceworker.
 
-Note: GitHub issues #1-#13 are all still OPEN. This project does not auto-close issues; the code/tests are the source of truth.
+Note: GitHub issues #1-#13 are all still OPEN. This project does not auto-close issues; the code/tests are the source of truth. Full project status lives in `ROADMAP.md`.
 
 ## FIRST THING TO DO (Noah parked it)
 
