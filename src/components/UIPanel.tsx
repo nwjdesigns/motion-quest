@@ -1,4 +1,5 @@
 import type { LayoutMode } from './ConstellationScene';
+import type { Theme } from '../lib/theme';
 
 export interface ExternalLink {
   label: string;
@@ -10,6 +11,8 @@ interface UIPanelProps {
   onLayoutChange: (layout: LayoutMode) => void;
   links: ExternalLink[];
   workWithMeUrl?: string;
+  theme: Theme;
+  onThemeToggle: () => void;
 }
 
 const layouts: { key: LayoutMode; label: string }[] = [
@@ -23,21 +26,32 @@ export function UIPanel({
   onLayoutChange,
   links,
   workWithMeUrl,
+  theme,
+  onThemeToggle,
 }: UIPanelProps) {
+  const isDark = theme === 'dark';
+  const panelBg = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
+  const panelBorder = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  const textColor = isDark ? '#ccc' : '#333';
+  const mutedColor = isDark ? '#999' : '#666';
+  const activeColor = isDark ? '#fff' : '#111';
+  const activeBg = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
+  const accentColor = isDark ? '#9aff9a' : '#2e7d32';
+
   return (
     <div style={{
       position: 'fixed',
       bottom: '24px',
       left: '24px',
       padding: '16px 20px',
-      background: 'rgba(255, 255, 255, 0.06)',
+      background: panelBg,
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
       borderRadius: '12px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: `1px solid ${panelBorder}`,
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: '13px',
-      color: '#ccc',
+      color: textColor,
       display: 'flex',
       flexDirection: 'column',
       gap: '12px',
@@ -48,7 +62,7 @@ export function UIPanel({
       onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
       onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
     >
-      <div style={{ display: 'flex', gap: '4px' }}>
+      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
         {layouts.map(l => (
           <button
             key={l.key}
@@ -61,22 +75,38 @@ export function UIPanel({
               fontFamily: 'inherit',
               fontSize: '12px',
               transition: 'all 0.2s ease',
-              background: layout === l.key
-                ? 'rgba(255, 255, 255, 0.2)'
-                : 'transparent',
-              color: layout === l.key ? '#fff' : '#999',
+              background: layout === l.key ? activeBg : 'transparent',
+              color: layout === l.key ? activeColor : mutedColor,
             }}
           >
             {l.label}
           </button>
         ))}
+        <button
+          onClick={onThemeToggle}
+          aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+          style={{
+            marginLeft: 'auto',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            fontSize: '12px',
+            transition: 'all 0.2s ease',
+            background: 'transparent',
+            color: mutedColor,
+          }}
+        >
+          {isDark ? 'Light' : 'Dark'}
+        </button>
       </div>
 
       <div style={{
         display: 'flex',
         flexDirection: 'column',
         gap: '6px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        borderTop: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'}`,
         paddingTop: '10px',
       }}>
         {links.map(link => (
@@ -86,13 +116,13 @@ export function UIPanel({
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              color: '#999',
+              color: mutedColor,
               textDecoration: 'none',
               fontSize: '12px',
               transition: 'color 0.2s ease',
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#999')}
+            onMouseEnter={e => (e.currentTarget.style.color = activeColor)}
+            onMouseLeave={e => (e.currentTarget.style.color = mutedColor)}
           >
             {link.label}
           </a>
@@ -103,7 +133,7 @@ export function UIPanel({
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              color: '#9aff9a',
+              color: accentColor,
               textDecoration: 'none',
               fontSize: '12px',
               fontWeight: 500,

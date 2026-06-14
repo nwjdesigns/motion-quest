@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import {
   InstancedMesh,
@@ -8,6 +8,7 @@ import {
   Color,
 } from 'three';
 import { generateParticles } from '../lib/particles';
+import { getThemeColors, type Theme } from '../lib/theme';
 
 const PARTICLE_COUNT = 200;
 const DRIFT_SPEED = 0.15;
@@ -47,7 +48,12 @@ void main() {
 }
 `;
 
-export function AmbientParticles() {
+interface AmbientParticlesProps {
+  theme: Theme;
+}
+
+export function AmbientParticles({ theme }: AmbientParticlesProps) {
+  const colors = getThemeColors(theme);
   const meshRef = useRef<InstancedMesh>(null);
 
   const particles = useMemo(() => generateParticles(PARTICLE_COUNT, {
@@ -75,7 +81,7 @@ export function AmbientParticles() {
 
   const material = useMemo(() => new ShaderMaterial({
     uniforms: {
-      uColor: { value: new Color(0.4, 0.45, 0.5) },
+      uColor: { value: new Color(...colors.particleColor) },
       uThreshold: { value: 0.3 },
       uFalloff: { value: 2.0 },
       uBaseOpacity: { value: 0.2 },
@@ -85,6 +91,10 @@ export function AmbientParticles() {
     transparent: true,
     depthWrite: false,
   }), []);
+
+  useEffect(() => {
+    material.uniforms.uColor.value.setRGB(...colors.particleColor);
+  }, [theme, material]);
 
   const dummy = useMemo(() => new Object3D(), []);
 

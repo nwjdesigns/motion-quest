@@ -10,15 +10,18 @@ import {
   Vector2,
 } from 'three';
 import { computeProximityGraph, type Point3D } from '../lib/proximity';
+import type { Theme } from '../lib/theme';
 
 const ACTIVATION_RADIUS = 5;
 const MAX_SEGMENTS = 500;
 
 interface ConnectingLinesProps {
   positions: Point3D[];
+  theme: Theme;
 }
 
-export function ConnectingLines({ positions }: ConnectingLinesProps) {
+export function ConnectingLines({ positions, theme }: ConnectingLinesProps) {
+  const lineBase = theme === 'dark' ? 0.5 : 0.3;
   const linesRef = useRef<LineSegments>(null);
   const mouseRef = useRef(new Vector2());
   const raycaster = useMemo(() => new Raycaster(), []);
@@ -85,7 +88,7 @@ export function ConnectingLines({ positions }: ConnectingLinesProps) {
       posArr[i + 3] = t.x;
       posArr[i + 4] = t.y;
       posArr[i + 5] = t.z;
-      const brightness = conn.opacity * 0.5;
+      const brightness = conn.opacity * lineBase;
       colArr[i] = brightness;
       colArr[i + 1] = brightness;
       colArr[i + 2] = brightness;
@@ -106,7 +109,7 @@ export function ConnectingLines({ positions }: ConnectingLinesProps) {
       posArr[i + 3] = b.x;
       posArr[i + 4] = b.y;
       posArr[i + 5] = b.z;
-      const brightness = conn.opacity * 0.3;
+      const brightness = conn.opacity * (lineBase * 0.6);
       colArr[i] = brightness;
       colArr[i + 1] = brightness;
       colArr[i + 2] = brightness;

@@ -1,4 +1,4 @@
-import { Suspense, useState, useMemo } from 'react';
+import { Suspense, useState, useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from './OrbitControls';
 import { AmbientParticles } from './AmbientParticles';
@@ -11,6 +11,8 @@ import { computeGridLayout } from '../lib/grid-layout';
 import { computeSpiralLayout } from '../lib/spiral-layout';
 import { ExperimentNode } from './ExperimentNode';
 import { UIPanel, type ExternalLink } from './UIPanel';
+import { ThemeProvider, useTheme } from './ThemeContext';
+import { resolveInitialTheme, type Theme } from '../lib/theme';
 
 export type LayoutMode = 'constellation' | 'grid' | 'spiral';
 
@@ -28,14 +30,31 @@ interface ConstellationSceneProps {
   workWithMeUrl?: string;
 }
 
-export default function ConstellationScene({
+function SceneBackground() {
+  const { colors } = useTheme();
+  return <color attach="background" args={[colors.background]} />;
+}
+
+function ThemedScene({
   experiments,
   baseUrl,
-  layout: initialLayout = 'constellation',
-  links = [],
+  initialLayout,
+  links,
   workWithMeUrl,
-}: ConstellationSceneProps) {
+}: {
+  experiments: ExperimentData[];
+  baseUrl: string;
+  initialLayout: LayoutMode;
+  links: ExternalLink[];
+  workWithMeUrl?: string;
+}) {
   const [layout, setLayout] = useState<LayoutMode>(initialLayout);
+  const { theme, colors, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('mq-theme', theme);
+  }, [theme]);
 
   const inputs: ConstellationInput[] = useMemo(
     () => experiments.map((exp, index) => ({ id: exp.id, index })),
@@ -54,12 +73,12 @@ export default function ConstellationScene({
   }, [inputs, layout]);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#0a0a0a', position: 'relative' }}>
+    <div style={{ width: '100vw', height: '100vh', background: colors.background, position: 'relative' }}>
       <Canvas
         camera={{ position: [0, 0, 12], fov: 60 }}
         style={{ width: '100%', height: '100%' }}
       >
-        <color attach="background" args={['#0a0a0a']} />
+        <SceneBackground />
         <ambientLight intensity={1} />
 
         <Suspense fallback={null}>
@@ -75,8 +94,8 @@ export default function ConstellationScene({
           ))}
         </Suspense>
 
-        <ConnectingLines positions={positions} />
-        <AmbientParticles />
+        <ConnectingLines positions={positions} theme={theme} />
+        <AmbientParticles theme={theme} />
 
         <OrbitControls
           enablePan={false}
@@ -90,7 +109,37 @@ export default function ConstellationScene({
         onLayoutChange={setLayout}
         links={links}
         workWithMeUrl={workWithMeUrl}
+        theme={theme}
+        onThemeToggle={toggleTheme}
       />
     </div>
+  );
+}
+
+export default function ConstellationScene({
+  experiments,
+  baseUrl,
+  layout: initialLayout = 'constellation',
+  links = [],
+  workWithMeUrl,
+}: ConstellationSceneProps) {
+  const initial = useMemo(() => {
+    const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('mq-theme') : null;
+    const prefersDark = typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : true;
+    return resolveInitialTheme(stored, prefersDark);
+  }, []);
+
+  return (
+    <ThemeProvider initialTheme={initial}>
+      <ThemedScene
+        experiments={experiments}
+        baseUrl={baseUrl}
+        initialLayout={initialLayout}
+        links={links}
+        workWithMeUrl={workWithMeUrl}
+      />
+    </ThemeProvider>
   );
 }
