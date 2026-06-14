@@ -1,4 +1,4 @@
-import { Suspense, useMemo } from 'react';
+import { Suspense, useState, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from './OrbitControls';
 import {
@@ -8,6 +8,7 @@ import {
 import { computeGridLayout } from '../lib/grid-layout';
 import { computeSpiralLayout } from '../lib/spiral-layout';
 import { ExperimentNode } from './ExperimentNode';
+import { UIPanel, type ExternalLink } from './UIPanel';
 
 export type LayoutMode = 'constellation' | 'grid' | 'spiral';
 
@@ -21,13 +22,19 @@ interface ConstellationSceneProps {
   experiments: ExperimentData[];
   baseUrl: string;
   layout?: LayoutMode;
+  links?: ExternalLink[];
+  workWithMeUrl?: string;
 }
 
 export default function ConstellationScene({
   experiments,
   baseUrl,
-  layout = 'constellation',
+  layout: initialLayout = 'constellation',
+  links = [],
+  workWithMeUrl,
 }: ConstellationSceneProps) {
+  const [layout, setLayout] = useState<LayoutMode>(initialLayout);
+
   const inputs: ConstellationInput[] = useMemo(
     () => experiments.map((exp, index) => ({ id: exp.id, index })),
     [experiments],
@@ -45,7 +52,7 @@ export default function ConstellationScene({
   }, [inputs, layout]);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#0a0a0a' }}>
+    <div style={{ width: '100vw', height: '100vh', background: '#0a0a0a', position: 'relative' }}>
       <Canvas
         camera={{ position: [0, 0, 12], fov: 60 }}
         style={{ width: '100%', height: '100%' }}
@@ -72,6 +79,13 @@ export default function ConstellationScene({
           maxDistance={30}
         />
       </Canvas>
+
+      <UIPanel
+        layout={layout}
+        onLayoutChange={setLayout}
+        links={links}
+        workWithMeUrl={workWithMeUrl}
+      />
     </div>
   );
 }
