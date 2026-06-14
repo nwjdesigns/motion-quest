@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { projectToScreen, type ScreenPoint } from '../src/lib/projection';
+import { projectToScreen, projectRect, type ScreenPoint } from '../src/lib/projection';
 
 // Identity-like view-projection: camera at origin looking down -Z,
 // with a simple perspective projection.
@@ -117,5 +117,70 @@ describe('projectToScreen', () => {
     // screen = (800, 0)
     expect(result.x).toBeCloseTo(800, 1);
     expect(result.y).toBeCloseTo(0, 1);
+  });
+});
+
+const IDENTITY_RECT: number[] = [
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 1, 0,
+  0, 0, 0, 1,
+];
+
+describe('projectRect', () => {
+  it('builds a bounding rect from the four projected world corners', () => {
+    // Center at origin, plane half-extents 0.8 x 0.45 (the 1.6 x 0.9 node).
+    // Corners NDC x ∈ {-0.8, 0.8}, y ∈ {-0.45, 0.45}.
+    // screenX: (-0.8+1)/2*800 = 80, (0.8+1)/2*800 = 720 → width 640
+    // screenY: (1-0.45)/2*600 = 165, (1+0.45)/2*600 = 435 → height 270
+    const rect = projectRect(
+      { x: 0, y: 0, z: 0 },
+      { x: 0.8, y: 0.45 },
+      IDENTITY_RECT,
+      800,
+      600,
+    );
+
+    expect(rect.x).toBeCloseTo(80, 1);
+    expect(rect.y).toBeCloseTo(165, 1);
+    expect(rect.width).toBeCloseTo(640, 1);
+    expect(rect.height).toBeCloseTo(270, 1);
+  });
+
+  it('scales the rect with the projection instead of using a fixed size', () => {
+    // w=2 projection halves NDC, so the on-screen rect is half the size.
+    // This is the whole point of the fix: at a different zoom the rect differs.
+    const perspMatrix: number[] = [
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 2,
+    ];
+
+    const rect = projectRect(
+      { x: 0, y: 0, z: 0 },
+      { x: 0.8, y: 0.45 },
+      perspMatrix,
+      800,
+      600,
+    );
+
+    // NDC x ∈ {-0.4, 0.4} → screenX 240, 560 → width 320 (half of 640)
+    // NDC y ∈ {-0.225, 0.225} → screenY 232.5, 367.5 → height 135 (half of 270)
+    expect(rect.width).toBeCloseTo(320, 1);
+    expect(rect.height).toBeCloseTo(135, 1);
+  });
+
+  it('centers the rect on the projected center', () => {
+    const rect = projectRect(
+      { x: 0, y: 0, z: 0 },
+      { x: 0.8, y: 0.45 },
+      IDENTITY_RECT,
+      800,
+      600,
+    );
+
+    expect(rect.x + rect.width / 2).toBeCloseTo(400, 1);
+    expect(rect.y + rect.height / 2).toBeCloseTo(300, 1);
   });
 });

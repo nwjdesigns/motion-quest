@@ -34,82 +34,146 @@ const themeScript = generateThemeScript();
     <script set:html={themeScript} />
     <style>
       * { margin: 0; box-sizing: border-box; }
-      html, body { height: 100%; font-family: system-ui, sans-serif; }
-      html, body { overflow-x: hidden; }
+      html, body { height: 100%; overflow: hidden; }
       :root[data-theme="dark"] {
         --mq-bg: #0a0a0a;
         --mq-text: #eaeaea;
-        --mq-text-muted: #999999;
+        --mq-text-muted: #aaaaaa;
         --mq-accent: #9aff9a;
+        --mq-panel-bg: rgba(14, 14, 14, 0.78);
+        --mq-panel-border: rgba(255, 255, 255, 0.12);
+        --mq-panel-hover: rgba(255, 255, 255, 0.1);
+        --mq-divider: rgba(255, 255, 255, 0.1);
       }
       :root[data-theme="light"] {
         --mq-bg: #f5f5f5;
         --mq-text: #1a1a1a;
-        --mq-text-muted: #666666;
+        --mq-text-muted: #5a5a5a;
         --mq-accent: #2e7d32;
+        --mq-panel-bg: rgba(248, 248, 248, 0.82);
+        --mq-panel-border: rgba(0, 0, 0, 0.12);
+        --mq-panel-hover: rgba(0, 0, 0, 0.06);
+        --mq-divider: rgba(0, 0, 0, 0.08);
       }
-      html, body { background: var(--mq-bg); color: var(--mq-text); }
-      body { display: flex; flex-direction: column; }
-      header {
-        padding: 16px 24px;
-        display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
-        font-family: ui-monospace, Menlo, monospace;
+      html, body {
+        background: var(--mq-bg);
+        color: var(--mq-text);
+        font-family: system-ui, -apple-system, sans-serif;
       }
-      header h1 { font-size: 16px; font-weight: 500; }
-      header .meta { font-size: 12px; color: var(--mq-text-muted); }
-      header .desc {
-        font-size: 13px; color: var(--mq-text-muted); margin-left: auto;
-        min-width: 0; overflow-wrap: anywhere;
-      }
-      .player-wrap { flex: 1; min-height: 0; }
-      .player-wrap iframe {
+
+      .stage { position: fixed; inset: 0; }
+      .stage iframe {
         width: 100%; height: 100%; border: none; display: block;
         touch-action: manipulation;
       }
-      footer {
-        padding: 12px 24px;
-        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+
+      .panel {
+        position: fixed;
+        background: var(--mq-panel-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--mq-panel-border);
+        border-radius: 12px;
+        opacity: 0.82;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+      }
+      .panel:hover { opacity: 1; }
+      @media (hover: none) { .panel { opacity: 1; } }
+
+      .title-card {
+        top: 24px; left: 24px;
+        padding: 16px 20px; max-width: 340px;
+        display: flex; flex-direction: column; gap: 6px;
+      }
+      .title-card h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+      .title-card .date {
         font-family: ui-monospace, Menlo, monospace;
-        font-size: 12px;
+        font-size: 12px; color: var(--mq-text-muted);
       }
-      footer a {
-        color: var(--mq-accent); text-decoration: none;
+      .title-card .desc {
+        font-size: 13px; color: var(--mq-text-muted);
+        line-height: 1.5; padding-top: 2px;
       }
-      footer a:hover { text-decoration: underline; }
+
+      .nav-panel {
+        bottom: 24px; left: 24px;
+        padding: 12px 14px;
+        display: flex; flex-direction: column; gap: 10px;
+      }
+      .nav-row { display: flex; align-items: center; gap: 4px; }
+      .nav-row a, .nav-row button {
+        font-family: inherit; font-size: 12px; color: var(--mq-text-muted);
+        text-decoration: none; background: transparent; border: none; cursor: pointer;
+        padding: 5px 10px; border-radius: 6px; transition: all 0.2s ease; white-space: nowrap;
+      }
+      .nav-row a:hover, .nav-row button:hover {
+        color: var(--mq-text); background: var(--mq-panel-hover);
+      }
+      .nav-row .toggle { margin-left: auto; }
+      .nav-foot { border-top: 1px solid var(--mq-divider); padding-top: 10px; }
+      .nav-foot a {
+        font-size: 12px; color: var(--mq-accent); text-decoration: none;
+        font-weight: 500; padding: 0 10px; transition: opacity 0.2s ease;
+      }
+      .nav-foot a:hover { opacity: 0.7; }
 
       @media (max-width: 600px) {
-        header {
-          padding: 12px 16px;
-          flex-direction: column; align-items: flex-start; gap: 4px;
-        }
-        header .desc { margin-left: 0; }
-        footer { padding: 10px 16px; gap: 12px; }
+        .title-card { top: 16px; left: 16px; right: 16px; max-width: none; padding: 12px 16px; }
+        .nav-panel { bottom: 16px; left: 16px; padding: 10px 12px; }
       }
     </style>
   </head>
   <body>
-    <header>
-      <h1>{title}</h1>
-      <span class="meta">{formattedDate}</span>
-      <span class="desc">{description}</span>
-    </header>
-    <div class="player-wrap">
+    <div class="stage">
       <iframe src={playerUrl} allow="cross-origin-isolated" id="cavalry-player"></iframe>
     </div>
-    <footer>
-      <a href={`${import.meta.env.BASE_URL}`}>&larr; Back</a>
-      {prev && <a href={`${base}/experiments/${prev}`}>&larr; Prev</a>}
-      {next && <a href={`${base}/experiments/${next}`}>Next &rarr;</a>}
-      {stripeLink && <a href={stripeLink} target="_blank" rel="noopener">Buy scene file</a>}
-    </footer>
+
+    <div class="panel title-card">
+      <h1>{title}</h1>
+      <span class="date">{formattedDate}</span>
+      {description && <span class="desc">{description}</span>}
+    </div>
+
+    <div class="panel nav-panel">
+      <div class="nav-row">
+        <a href={`${import.meta.env.BASE_URL}`}>&larr; Back</a>
+        {prev && <a href={`${base}/experiments/${prev}`}>&larr; Prev</a>}
+        {next && <a href={`${base}/experiments/${next}`}>Next &rarr;</a>}
+        <button class="toggle" id="theme-toggle" aria-label="Toggle theme">Light</button>
+      </div>
+      {stripeLink && (
+        <div class="nav-foot">
+          <a href={stripeLink} target="_blank" rel="noopener">Buy scene file</a>
+        </div>
+      )}
+    </div>
+
     <script>
-      const iframe = document.getElementById('cavalry-player') as HTMLIFrameElement;
-      if (iframe) {
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        iframe.addEventListener('load', () => {
-          iframe.contentWindow?.postMessage({ type: 'theme-change', theme }, '*');
-        });
-      }
+      const iframe = document.getElementById('cavalry-player') as HTMLIFrameElement | null;
+      const toggle = document.getElementById('theme-toggle') as HTMLButtonElement | null;
+
+      const currentTheme = () =>
+        document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+
+      const syncToggleLabel = () => {
+        if (toggle) toggle.textContent = currentTheme() === 'dark' ? 'Light' : 'Dark';
+      };
+
+      const postTheme = () => {
+        iframe?.contentWindow?.postMessage({ type: 'theme-change', theme: currentTheme() }, '*');
+      };
+
+      syncToggleLabel();
+      iframe?.addEventListener('load', postTheme);
+
+      toggle?.addEventListener('click', () => {
+        const next = currentTheme() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('mq-theme', next);
+        syncToggleLabel();
+        postTheme();
+      });
     </script>
   </body>
 </html>

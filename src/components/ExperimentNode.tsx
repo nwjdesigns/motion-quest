@@ -6,7 +6,7 @@ import type { ThreeEvent } from '@react-three/fiber';
 import type { Position3D } from '../lib/constellation';
 import { PixelationMaterial } from './PixelationMaterial';
 import { serializeCameraState } from '../lib/camera-state';
-import { projectToScreen } from '../lib/projection';
+import { projectRect } from '../lib/projection';
 import type { ScreenRect } from '../lib/morph';
 
 interface ExperimentNodeProps {
@@ -20,6 +20,10 @@ interface ExperimentNodeProps {
 
 const springStiffness = 8;
 const springDamping = 5;
+
+// World-space size of the node's thumbnail plane (must match planeGeometry below).
+const planeWidth = 1.6;
+const planeHeight = 0.9;
 
 export function ExperimentNode({
   position,
@@ -91,21 +95,15 @@ export function ExperimentNode({
       const m = vpMatrix.elements;
       const worldPos = meshRef.current.position;
 
-      const center = projectToScreen(
+      // Size the morph start-rect from the plane's true projected corners so it
+      // matches the thumbnail's on-screen size at any zoom (not a fixed 160x90).
+      const rect: ScreenRect = projectRect(
         { x: worldPos.x, y: worldPos.y, z: worldPos.z },
+        { x: planeWidth / 2, y: planeHeight / 2 },
         Array.from(m),
         size.width,
         size.height,
       );
-
-      const halfW = 80;
-      const halfH = 45;
-      const rect: ScreenRect = {
-        x: center.x - halfW,
-        y: center.y - halfH,
-        width: halfW * 2,
-        height: halfH * 2,
-      };
 
       onNavigate(slug, rect);
       return;
@@ -129,7 +127,7 @@ export function ExperimentNode({
       }}
       material={material}
     >
-      <planeGeometry args={[1.6, 0.9]} />
+      <planeGeometry args={[planeWidth, planeHeight]} />
     </mesh>
   );
 }
