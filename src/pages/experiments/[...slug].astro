@@ -69,6 +69,8 @@ const themeScript = generateThemeScript();
 
       .panel {
         position: fixed;
+        top: 50%; left: 24px;
+        transform: translateY(-50%);
         background: var(--mq-panel-bg);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
@@ -77,29 +79,26 @@ const themeScript = generateThemeScript();
         opacity: 0.82;
         transition: opacity 0.3s ease;
         z-index: 10;
+        padding: 16px 20px; max-width: 340px;
+        display: flex; flex-direction: column; gap: 14px;
       }
       .panel:hover { opacity: 1; }
       @media (hover: none) { .panel { opacity: 1; } }
 
-      .title-card {
-        top: 24px; left: 24px;
-        padding: 16px 20px; max-width: 340px;
-        display: flex; flex-direction: column; gap: 6px;
-      }
-      .title-card h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
-      .title-card .date {
+      .panel-head { display: flex; flex-direction: column; gap: 6px; }
+      .panel-head h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+      .panel-head .date {
         font-family: ui-monospace, Menlo, monospace;
         font-size: 12px; color: var(--mq-text-muted);
       }
-      .title-card .desc {
+      .panel-head .desc {
         font-size: 13px; color: var(--mq-text-muted);
         line-height: 1.5; padding-top: 2px;
       }
 
-      .nav-panel {
-        bottom: 24px; left: 24px;
-        padding: 12px 14px;
+      .nav-foot-wrap {
         display: flex; flex-direction: column; gap: 10px;
+        border-top: 1px solid var(--mq-divider); padding-top: 12px;
       }
       .nav-row { display: flex; align-items: center; gap: 4px; }
       .nav-row a, .nav-row button {
@@ -111,16 +110,14 @@ const themeScript = generateThemeScript();
         color: var(--mq-text); background: var(--mq-panel-hover);
       }
       .nav-row .toggle { margin-left: auto; }
-      .nav-foot { border-top: 1px solid var(--mq-divider); padding-top: 10px; }
-      .nav-foot a {
+      .buy-link {
         font-size: 12px; color: var(--mq-accent); text-decoration: none;
         font-weight: 500; padding: 0 10px; transition: opacity 0.2s ease;
       }
-      .nav-foot a:hover { opacity: 0.7; }
+      .buy-link:hover { opacity: 0.7; }
 
       @media (max-width: 600px) {
-        .title-card { top: 16px; left: 16px; right: 16px; max-width: none; padding: 12px 16px; }
-        .nav-panel { bottom: 16px; left: 16px; padding: 10px 12px; }
+        .panel { left: 16px; right: 16px; max-width: none; padding: 12px 16px; }
       }
     </style>
   </head>
@@ -129,24 +126,24 @@ const themeScript = generateThemeScript();
       <iframe src={playerUrl} allow="cross-origin-isolated" id="cavalry-player"></iframe>
     </div>
 
-    <div class="panel title-card">
-      <h1>{title}</h1>
-      <span class="date">{formattedDate}</span>
-      {description && <span class="desc">{description}</span>}
-    </div>
-
-    <div class="panel nav-panel">
-      <div class="nav-row">
-        <a href={`${import.meta.env.BASE_URL}`}>&larr; Back</a>
-        {prev && <a href={`${base}/experiments/${prev}`}>&larr; Prev</a>}
-        {next && <a href={`${base}/experiments/${next}`}>Next &rarr;</a>}
-        <button class="toggle" id="theme-toggle" aria-label="Toggle theme">Light</button>
+    <div class="panel">
+      <div class="panel-head">
+        <h1>{title}</h1>
+        <span class="date">{formattedDate}</span>
+        {description && <span class="desc">{description}</span>}
       </div>
-      {stripeLink && (
-        <div class="nav-foot">
-          <a href={stripeLink} target="_blank" rel="noopener">Buy scene file</a>
+
+      <div class="nav-foot-wrap">
+        <div class="nav-row">
+          <a href={`${import.meta.env.BASE_URL}`}>&larr; Back</a>
+          {prev && <a href={`${base}/experiments/${prev}`}>&larr; Prev</a>}
+          {next && <a href={`${base}/experiments/${next}`}>Next &rarr;</a>}
+          <button class="toggle" id="theme-toggle" aria-label="Toggle theme">Light</button>
         </div>
-      )}
+        {stripeLink && (
+          <a class="buy-link" href={stripeLink} target="_blank" rel="noopener">Buy scene file</a>
+        )}
+      </div>
     </div>
 
     <script>
