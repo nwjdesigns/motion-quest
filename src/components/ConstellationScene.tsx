@@ -1,11 +1,15 @@
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from './OrbitControls';
 import {
   computeConstellationLayout,
   type ConstellationInput,
 } from '../lib/constellation';
+import { computeGridLayout } from '../lib/grid-layout';
+import { computeSpiralLayout } from '../lib/spiral-layout';
 import { ExperimentNode } from './ExperimentNode';
+
+export type LayoutMode = 'constellation' | 'grid' | 'spiral';
 
 export interface ExperimentData {
   id: string;
@@ -16,18 +20,29 @@ export interface ExperimentData {
 interface ConstellationSceneProps {
   experiments: ExperimentData[];
   baseUrl: string;
+  layout?: LayoutMode;
 }
 
 export default function ConstellationScene({
   experiments,
   baseUrl,
+  layout = 'constellation',
 }: ConstellationSceneProps) {
-  const inputs: ConstellationInput[] = experiments.map((exp, index) => ({
-    id: exp.id,
-    index,
-  }));
+  const inputs: ConstellationInput[] = useMemo(
+    () => experiments.map((exp, index) => ({ id: exp.id, index })),
+    [experiments],
+  );
 
-  const positions = computeConstellationLayout(inputs);
+  const positions = useMemo(() => {
+    switch (layout) {
+      case 'grid':
+        return computeGridLayout(inputs);
+      case 'spiral':
+        return computeSpiralLayout(inputs);
+      default:
+        return computeConstellationLayout(inputs);
+    }
+  }, [inputs, layout]);
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#0a0a0a' }}>
