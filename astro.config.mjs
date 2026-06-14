@@ -6,4 +6,5 @@ export default defineConfig({
   base: '/motion-quest',
   output: 'static',
   integrations: [react()],
+  devToolbar: { enabled: false },
 });

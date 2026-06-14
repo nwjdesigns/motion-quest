@@ -12,6 +12,7 @@ import { computeSpiralLayout } from '../lib/spiral-layout';
 import { ExperimentNode } from './ExperimentNode';
 import { UIPanel, type ExternalLink } from './UIPanel';
 import { ThemeProvider, useTheme } from './ThemeContext';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { resolveInitialTheme, type Theme } from '../lib/theme';
 import { deserializeCameraState } from '../lib/camera-state';
 import { interpolateRect, type ScreenRect } from '../lib/morph';
@@ -108,6 +109,7 @@ function ThemedScene({
   const [layout, setLayout] = useState<LayoutMode>(initialLayout);
   const { theme, colors, toggleTheme } = useTheme();
   const [morphState, setMorphState] = useState<{ slug: string; rect: ScreenRect } | null>(null);
+  const isTouch = useMediaQuery('(hover: none)');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -140,7 +142,7 @@ function ThemedScene({
     <div style={{ width: '100vw', height: '100vh', background: colors.background, position: 'relative' }}>
       <Canvas
         camera={{ position: cameraPosition, fov: 60 }}
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%', touchAction: 'none' }}
       >
         <SceneBackground />
         <ambientLight intensity={1} />
@@ -177,6 +179,7 @@ function ThemedScene({
         workWithMeUrl={workWithMeUrl}
         theme={theme}
         onThemeToggle={toggleTheme}
+        isTouch={isTouch}
       />
 
       {morphState && (

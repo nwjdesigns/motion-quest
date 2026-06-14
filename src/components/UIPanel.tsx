@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { LayoutMode } from './ConstellationScene';
 import type { Theme } from '../lib/theme';
 
@@ -13,6 +14,8 @@ interface UIPanelProps {
   workWithMeUrl?: string;
   theme: Theme;
   onThemeToggle: () => void;
+  /** Touch / no-hover device: collapse the panel behind a tappable toggle. */
+  isTouch?: boolean;
 }
 
 const layouts: { key: LayoutMode; label: string }[] = [
@@ -28,7 +31,9 @@ export function UIPanel({
   workWithMeUrl,
   theme,
   onThemeToggle,
+  isTouch = false,
 }: UIPanelProps) {
+  const [expanded, setExpanded] = useState(false);
   const isDark = theme === 'dark';
   const panelBg = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
   const panelBorder = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
@@ -38,12 +43,14 @@ export function UIPanel({
   const activeBg = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
   const accentColor = isDark ? '#9aff9a' : '#2e7d32';
 
+  const showContent = !isTouch || expanded;
+
   return (
     <div style={{
       position: 'fixed',
       bottom: '24px',
       left: '24px',
-      padding: '16px 20px',
+      padding: isTouch && !expanded ? '10px 14px' : '16px 20px',
       background: panelBg,
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
@@ -55,13 +62,37 @@ export function UIPanel({
       display: 'flex',
       flexDirection: 'column',
       gap: '12px',
-      opacity: 0.5,
+      maxWidth: 'calc(100vw - 48px)',
+      opacity: isTouch ? 1 : 0.5,
       transition: 'opacity 0.3s ease',
       zIndex: 10,
     }}
-      onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-      onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
+      onMouseEnter={isTouch ? undefined : e => (e.currentTarget.style.opacity = '1')}
+      onMouseLeave={isTouch ? undefined : e => (e.currentTarget.style.opacity = '0.5')}
     >
+      {isTouch && (
+        <button
+          onClick={() => setExpanded(v => !v)}
+          aria-label={expanded ? 'Close menu' : 'Open menu'}
+          aria-expanded={expanded}
+          style={{
+            alignSelf: 'flex-start',
+            padding: '6px 12px',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            fontSize: '14px',
+            background: activeBg,
+            color: activeColor,
+          }}
+        >
+          {expanded ? '✕' : '☰'}
+        </button>
+      )}
+
+      {showContent && (
+      <>
       <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
         {layouts.map(l => (
           <button
@@ -146,6 +177,8 @@ export function UIPanel({
           </a>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }

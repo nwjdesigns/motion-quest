@@ -22,6 +22,23 @@ For deeper project context (studio model, why this exists, constraints) see [`pr
 | `references/` | Screenshots, links, inspiration |
 | `logbook/` | One markdown file per **month** — long-form session entries with Slack & social copy |
 
+## Publishing a Cavalry Lab experiment
+
+The Cavalry Lab site ([`src/`](./src), deployed to GitHub Pages) lists daily experiments. To publish one, run:
+
+```bash
+npm run publish -- path/to/scene.cv "Experiment Title" [--description "..."] [--commit]
+```
+
+What it does:
+
+- Copies `scene.cv` into `public/cavalry/scenes/`.
+- Copies the matching thumbnail `path/to/scene.png` (same name, `.png`) into `public/cavalry/`. If the thumbnail is missing it warns and continues, so you can add it later.
+- Writes a markdown entry to `src/content/experiments/<scene>.md` with today's date and schema-valid frontmatter.
+- With `--commit`, stages the new files and commits them as `Publish experiment: <scene>`.
+
+Arguments: the `.cv` path and title are required positionals; `--description` is optional (defaults to empty). The slug, scene path, and thumbnail path are all derived from the `.cv` filename.
+
 ## Logbook
 
 One file per month: `logbook/YYYY-MM.md` (e.g. `logbook/2026-04.md`). Inside, each session is its own block, **newest at the top**.

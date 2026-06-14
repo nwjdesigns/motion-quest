@@ -35,6 +35,7 @@ const themeScript = generateThemeScript();
     <style>
       * { margin: 0; box-sizing: border-box; }
       html, body { height: 100%; font-family: system-ui, sans-serif; }
+      html, body { overflow-x: hidden; }
       :root[data-theme="dark"] {
         --mq-bg: #0a0a0a;
         --mq-text: #eaeaea;
@@ -51,17 +52,23 @@ const themeScript = generateThemeScript();
       body { display: flex; flex-direction: column; }
       header {
         padding: 16px 24px;
-        display: flex; align-items: baseline; gap: 16px;
+        display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
         font-family: ui-monospace, Menlo, monospace;
       }
       header h1 { font-size: 16px; font-weight: 500; }
       header .meta { font-size: 12px; color: var(--mq-text-muted); }
-      header .desc { font-size: 13px; color: var(--mq-text-muted); margin-left: auto; }
+      header .desc {
+        font-size: 13px; color: var(--mq-text-muted); margin-left: auto;
+        min-width: 0; overflow-wrap: anywhere;
+      }
       .player-wrap { flex: 1; min-height: 0; }
-      .player-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+      .player-wrap iframe {
+        width: 100%; height: 100%; border: none; display: block;
+        touch-action: manipulation;
+      }
       footer {
         padding: 12px 24px;
-        display: flex; align-items: center; gap: 16px;
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
         font-family: ui-monospace, Menlo, monospace;
         font-size: 12px;
       }
@@ -69,6 +76,15 @@ const themeScript = generateThemeScript();
         color: var(--mq-accent); text-decoration: none;
       }
       footer a:hover { text-decoration: underline; }
+
+      @media (max-width: 600px) {
+        header {
+          padding: 12px 16px;
+          flex-direction: column; align-items: flex-start; gap: 4px;
+        }
+        header .desc { margin-left: 0; }
+        footer { padding: 10px 16px; gap: 12px; }
+      }
     </style>
   </head>
   <body>

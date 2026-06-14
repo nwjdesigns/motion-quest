@@ -23,6 +23,11 @@ const themeScript = generateThemeScript();
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: 100%; height: 100%; overflow: hidden; }
+      /* Let the 3D canvas swallow native touch gestures (pinch/drag) so they
+         drive OrbitControls instead of browser zoom/scroll on mobile.
+         :global() needed: the canvas is React-rendered (client:only) so it
+         lacks Astro's scope attribute. */
+      :global(canvas) { touch-action: none; }
       :root[data-theme="dark"] {
         --mq-bg: #0a0a0a;
         --mq-text: #eaeaea;
