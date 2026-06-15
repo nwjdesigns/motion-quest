@@ -1,32 +1,50 @@
-# Next Session: Cavalry Lab — unify detail panels + real content
+# Next Session: Cavalry Lab — real content + design craft
 
 ## Context
 
-All 13 build issues (#1-#13) are DONE. Site live at https://nwjdesigns.github.io/motion-quest/. Repo public. **166 Vitest tests across 20 files** (the old "197/24" figure was inflated by vitest scanning duplicate test copies inside `.claude/worktrees/`, now cleaned up). Astro 6, React, R3F (three.js directly, no drei), content collection, GitHub Pages deploy, Cavalry WASM player with coi-serviceworker.
+All 13 build issues (#1-#13) are DONE. Site live at https://nwjdesigns.github.io/motion-quest/. Repo public. **166 Vitest tests across 20 files.** Astro 6, React, R3F (three.js directly, no drei), content collection, GitHub Pages deploy, Cavalry WASM player with coi-serviceworker.
+
+**Unpushed:** Commit `5c3a98c` (panel merge) is on `main` but NOT pushed. Push first thing.
 
 Note: GitHub issues #1-#13 are all still OPEN. This project does not auto-close issues; the code/tests are the source of truth. Full project status lives in `ROADMAP.md`.
 
-## FIRST THING TO DO (Noah parked it)
+## What shipped last session (2026-06-15)
 
-**Merge the experiment detail page's two panels into ONE.** Right now `src/pages/experiments/[...slug].astro` has two separate floating frosted-glass panels: a title card (top-left) and a nav panel (bottom-left). Noah wants them combined into a single unified panel. Keep the homepage design language (frosted glass, system-ui type, mono date, green accent, theme toggle), just one panel instead of two splits.
+- **Panel merge:** Combined the detail page's two separate panels (title card top-left + nav panel bottom-left) into one vertically-centred unified panel at centre-left. `.panel` now uses `top: 50%; transform: translateY(-50%)`. Title/date/description in `.panel-head`, nav/buy-link in `.nav-foot-wrap` with a divider between them. Mobile breakpoint simplified to one rule.
 
-## Shipped 2026-06-14 (session 2)
+## Priority 1: Real content
 
-- **Morph-rect dynamic sizing:** `projectRect()` in `src/lib/projection.ts` projects the thumbnail plane's 4 world corners to a screen bounding box, replacing a hardcoded 160x90 start rect (wrong at non-default zoom). Wired into `ExperimentNode.tsx`. +3 tests.
-- **Player 404 guard:** `public/cavalry/scene-loader.js` (`validateSceneResponse`) checks `res.ok` + content-type before parsing. Fixes the "white void" detail pages — a missing `.cv` returned a 404 HTML page the WASM player parsed into a blank 1920x1080 white scene. Now shows a clean "Scene not found (404)". +3 tests.
-- **Player theme handoff:** `public/cavalry/player-theme.js` (`resolveThemeMessage`) + a `message` listener in `player.html`. The player was hardcoded black and ignored the `theme-change` postMessage the page already sent. Now matches light/dark. +5 tests.
-- **Detail-page redesign (Direction A):** `[...slug].astro` rebuilt to match the homepage UIPanel — full-bleed player stage + floating frosted-glass title card and nav panel, working theme toggle (flips page + panels + player, persists to `mq-theme`). Panel tokens deliberately diverge from the homepage's 6%-white-tint glass: they use a theme-colored frosted fill (dark/light glass) for legibility over arbitrary scene colors.
-- Worktrees cleaned up (removed 3 stale worktrees + 6 merged branches; only `main` remains).
+`exp-01`..`exp-30` have thumbnails + `.md` but NO `.cv` scene files — only `particle-grid` is real. Their detail pages say "Scene not found (404)." The site reads as an empty gallery.
 
-## What to do next (after the panel merge)
+**Publish flow:** When Noah provides a `.cv` file path, handle everything directly (don't tell him to run the publish script):
+1. Copy `.cv` to `public/cavalry/scenes/`
+2. Copy matching `.png` thumbnail to `public/cavalry/` (if it exists alongside the `.cv`)
+3. Write content markdown to `src/content/experiments/`
+4. Stage and commit
 
-1. **Real content.** `exp-01`..`exp-30` have thumbnails + `.md` but NO `.cv` scene files — only `particle-grid` is real. Their detail pages honestly say "Scene not found" now. Replace with real Cavalry exports via `npm run publish -- path/to/scene.cv "Title" [--description "..."] [--commit]`.
-2. **Detail-page mobile.** The new floating panels do NOT collapse on touch like the homepage UIPanel (no `☰` toggle). Add a touch-collapse if wanted. Also: real-device check of touch gestures (pinch/drag/tap) — can't be verified in desktop preview.
-3. **Cavalry scene interactivity.** Player auto-binds cursor to Control Centre double2/int2 attributes only; real scenes need those CC attributes exposed in Cavalry.
+Reference: `scripts/publish.mjs` has the exact logic for slug derivation, yaml frontmatter format, etc.
+
+## Priority 2: Compositional/design craft (after real content)
+
+Noah flagged the site reads "low craft" and isn't portfolio-worthy. After discussion he concluded the empty content is the primary problem, not the frame. BUT once real scenes are in, these compositional issues remain:
+
+- **Homepage has no identity.** No visible title, author, or voice. Just floating thumbnails with a dev-tool panel.
+- **Typography.** `system-ui` everywhere. No distinctive type choice or hierarchy.
+- **UIPanel reads as controls.** Layout switchers and links feel bolted-on, not designed.
+- **Experiment nodes have no presence.** No labels, no hover titles. 1.6x0.9 planes at 0.85 opacity.
+- **No entrance animation.** Everything is already there when you arrive.
+- **Generic glassmorphism.** Both pages use the same frosted-glass pattern every tutorial produces.
+
+Noah wants to revisit these AFTER real content gives the site something to compose around.
+
+## Other open items
+
+- Detail-page mobile: floating panel does NOT collapse on touch like the homepage UIPanel (no `☰` toggle).
+- Scene interactivity: player auto-binds cursor to CC `double2`/`int2` attributes only; real scenes need those exposed in Cavalry.
+- Placeholder UIPanel links (Instagram, Patreon, Scenery, Work with me) — replace with real URLs.
 
 ## Known rough edges
 
-- Direction A keeps letterboxing: a 16:9 scene full-bleed on a tall viewport leaves margins (Noah chose A knowing this; real dark scenes will look better than the white test scene).
+- Direction A keeps letterboxing: 16:9 scene full-bleed on tall viewport leaves margins (accepted).
 - Three.js chunk-size warning on build (expected).
-- Link URLs in the homepage UIPanel (Instagram, Patreon, Scenery, Work with me) are still placeholders from index.astro.
-- `preview_screenshot` glitches on the WASM-player iframe (captures mid-paint); trust DOM `getBoundingClientRect`, screenshot a 404 scene for clean chrome captures. See memory `reference_astro_react_gotchas.md`.
+- `preview_screenshot` glitches on WASM-player iframe; trust DOM measurements, screenshot 404 scenes for clean chrome. See memory `reference_astro_react_gotchas.md`.

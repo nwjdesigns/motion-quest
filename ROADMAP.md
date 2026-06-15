@@ -21,11 +21,12 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 | #12 | Mobile touch support (touch-collapsible UIPanel, `touch-action: none`, responsive detail page) |
 | #13 | Publishing CLI (`npm run publish -- scene.cv "Title" [--description ..] [--commit]`) |
 | 2026-06-14 s2 | Morph-rect dynamic sizing (`projectRect`), player 404 guard (no more white void), player theme handoff, experiment detail-page redesign (Direction A), worktree cleanup |
+| 2026-06-15 | Merged detail page's two panels (title card + nav) into one vertically-centred unified panel |
 
 ## Next up
 
-1. **Merge the detail page's two panels into one** (parked, Noah's request). Keep the homepage design language; one unified panel instead of split title + nav.
-2. **Real content.** `exp-01`..`exp-30` have thumbnails + `.md` but NO `.cv` scene files (only `particle-grid` is real); their detail pages currently say "Scene not found". Replace with real Cavalry exports via the publish CLI.
+1. **Real content.** `exp-01`..`exp-30` have thumbnails + `.md` but NO `.cv` scene files (only `particle-grid` is real); their detail pages currently say "Scene not found". Noah provides the `.cv` file path, Claude handles the copy + markdown + commit.
+2. **Compositional/design craft.** After real content is in, revisit: homepage identity (no visible title/author), typography (system-ui everywhere), entrance animations, panel design language. Noah flagged the site reads "low craft" but concluded the empty content is the primary issue.
 3. **Detail-page mobile.** The redesigned floating panels do not collapse on touch like the homepage UIPanel (no `☰` toggle). Add a touch-collapse + real-device gesture check (pinch/drag/tap can't be verified in desktop preview).
 4. **Scene interactivity.** The player auto-binds cursor to Control Centre `double2`/`int2` attributes only; real scenes need those CC attributes exposed in Cavalry.
 
