@@ -17,15 +17,168 @@
       }
       #status.error { color: #ff6b6b; }
       #status.hidden { display: none; }
+
+      /* On-scene Control Centre panel ------------------------------------- */
+      :root[data-theme="dark"] {
+        --cc-container: rgba(18, 18, 18, 0.42);
+        --cc-row: rgba(255, 255, 255, 0.07);
+        --cc-fill: rgba(255, 255, 255, 0.16);
+        --cc-text: #ededed;
+        --cc-muted: rgba(255, 255, 255, 0.5);
+        --cc-border: rgba(255, 255, 255, 0.08);
+        --cc-dot: rgba(255, 255, 255, 0.3);
+      }
+      :root[data-theme="light"] {
+        --cc-container: rgba(244, 244, 244, 0.42);
+        --cc-row: rgba(0, 0, 0, 0.05);
+        --cc-fill: rgba(0, 0, 0, 0.11);
+        --cc-text: #1c1c1c;
+        --cc-muted: rgba(0, 0, 0, 0.45);
+        --cc-border: rgba(0, 0, 0, 0.06);
+        --cc-dot: rgba(0, 0, 0, 0.22);
+      }
+
+      .cc-panel {
+        position: fixed; top: 14px; right: 14px;
+        width: min(300px, calc(100vw - 28px));
+        transform: scale(0.9); transform-origin: top right;
+        display: flex; flex-direction: column; gap: 8px;
+        padding: 10px; border-radius: 18px;
+        background: var(--cc-container);
+        backdrop-filter: blur(22px) saturate(1.4);
+        -webkit-backdrop-filter: blur(22px) saturate(1.4);
+        border: 1px solid var(--cc-border);
+        box-shadow: 0 10px 34px rgba(0, 0, 0, 0.18);
+        z-index: 20;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      .cc-panel.cc-empty { display: none; }
+
+      .cc-row {
+        position: relative;
+        display: flex; align-items: center; justify-content: space-between;
+        min-height: 50px; padding: 0 18px;
+        border-radius: 12px; background: var(--cc-row);
+        overflow: hidden;
+      }
+      .cc-label {
+        position: relative; z-index: 2;
+        font-size: 16px; font-weight: 400; color: var(--cc-text);
+        white-space: nowrap;
+      }
+
+      /* numeric: track + fill + value laid under the label/value */
+      .cc-row--track { cursor: ew-resize; user-select: none; touch-action: none; }
+      .cc-track { position: absolute; inset: 0; z-index: 0; border-radius: 12px; }
+      .cc-track--dotted {
+        background-image: radial-gradient(var(--cc-dot) 1.1px, transparent 1.4px);
+        background-size: 22px 100%; background-position: 11px center;
+        background-repeat: repeat-x;
+      }
+      .cc-fill {
+        position: absolute; left: 0; top: 0; bottom: 0;
+        border-radius: 12px; background: var(--cc-row);
+        box-shadow: inset 0 0 0 999px var(--cc-fill);
+        border-right: 1.5px solid var(--cc-muted);
+      }
+      .cc-track--scrub .cc-fill { border-right: none; }
+      .cc-value {
+        position: relative; z-index: 2;
+        font-size: 16px; color: var(--cc-text);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* menu */
+      .cc-menu { display: inline-flex; align-items: center; gap: 7px; }
+      .cc-select {
+        appearance: none; -webkit-appearance: none;
+        background: transparent; border: none; outline: none;
+        font-family: inherit; font-size: 16px; color: var(--cc-text);
+        text-align: right; text-align-last: right; cursor: pointer;
+        max-width: 150px;
+      }
+      .cc-select option { color: #111; }
+      .cc-chevrons { width: 10px; height: 16px; flex: none; }
+      .cc-chevrons path {
+        fill: none; stroke: var(--cc-muted);
+        stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;
+      }
+
+      /* color */
+      .cc-color { position: relative; display: inline-flex; }
+      .cc-swatch {
+        appearance: none; -webkit-appearance: none; padding: 0;
+        width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);
+      }
+
+      /* custom colour picker popover */
+      .cc-pop {
+        position: absolute; left: 10px; right: 10px; z-index: 40;
+        padding: 8px; border-radius: 14px;
+        background: var(--cc-container);
+        backdrop-filter: blur(22px) saturate(1.4);
+        -webkit-backdrop-filter: blur(22px) saturate(1.4);
+        border: 1px solid var(--cc-border);
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+      }
+      .cc-sv {
+        position: relative; width: 100%; height: 140px;
+        border-radius: 10px; cursor: crosshair; touch-action: none;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+      }
+      .cc-hue {
+        position: relative; width: 100%; height: 14px; margin-top: 8px;
+        border-radius: 7px; cursor: ew-resize; touch-action: none;
+        background: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
+      }
+      .cc-sv-knob, .cc-hue-knob {
+        position: absolute; width: 14px; height: 14px; border-radius: 50%;
+        transform: translate(-50%, -50%); pointer-events: none;
+        box-shadow: 0 0 0 2px #fff, 0 0 2px 1px rgba(0, 0, 0, 0.5);
+      }
+      .cc-hue-knob { top: 50%; background: #fff; }
+      .cc-hex {
+        width: 100%; margin-top: 8px; box-sizing: border-box;
+        background: var(--cc-row); border: 1px solid var(--cc-border);
+        border-radius: 8px; padding: 7px 10px;
+        font-family: ui-monospace, Menlo, monospace; font-size: 13px;
+        color: var(--cc-text); text-align: center; outline: none;
+      }
+
+      /* toggle */
+      .cc-toggle {
+        position: relative; width: 46px; height: 28px;
+        border-radius: 999px; border: none; padding: 0; cursor: pointer;
+        background: var(--cc-fill); transition: background 0.2s ease;
+      }
+      .cc-toggle--on { background: #34c759; }
+      .cc-knob {
+        position: absolute; top: 3px; left: 3px;
+        width: 22px; height: 22px; border-radius: 50%;
+        background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease;
+      }
+      .cc-toggle--on .cc-knob { transform: translateX(18px); }
+
+      /* text */
+      .cc-text {
+        background: transparent; border: none; outline: none;
+        text-align: right; font-family: inherit; font-size: 15px;
+        color: var(--cc-text); max-width: 150px;
+      }
     </style>
   </head>
   <body>
     <canvas id="canvas"></canvas>
     <div id="status">Loading...</div>
+    <div id="cc-panel" class="cc-panel cc-empty"></div>
 
     <script type="module">
       import { validateSceneResponse } from './scene-loader.js';
       import { resolveThemeMessage } from './player-theme.js';
+      import { renderControls } from './render-controls.js';
 
       // Match the player chrome to the host page's light/dark theme.
       window.addEventListener('message', (e) => {
@@ -121,6 +274,16 @@
               return [];
             } catch { return []; }
           })();
+
+          // Render whatever Control Centre attributes this scene exposes as an
+          // on-scene control panel (top-right). Position attributes are filtered
+          // out by the renderer since they are cursor-driven below.
+          try {
+            const panel = document.getElementById('cc-panel');
+            renderControls(player, panel, ccAttrs);
+          } catch (e) {
+            console.error('[player] failed to render controls:', e);
+          }
 
           const posAttrs = [];
           for (const path of ccAttrs) {
