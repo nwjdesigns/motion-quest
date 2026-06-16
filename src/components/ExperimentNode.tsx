@@ -21,9 +21,8 @@ interface ExperimentNodeProps {
 const springStiffness = 8;
 const springDamping = 5;
 
-// World-space size of the node's thumbnail plane (must match planeGeometry below).
-const planeWidth = 1.6;
-const planeHeight = 0.9;
+// Target area for all nodes regardless of aspect ratio.
+const planeArea = 1.6 * 0.9;
 
 export function ExperimentNode({
   position,
@@ -42,6 +41,10 @@ export function ExperimentNode({
   const thumbnailUrl = `${base}/cavalry/${thumbnail}`;
 
   const texture = useLoader(TextureLoader, thumbnailUrl);
+
+  const aspect = texture.image ? texture.image.width / texture.image.height : 16 / 9;
+  const planeWidth = Math.sqrt(planeArea * aspect);
+  const planeHeight = planeArea / planeWidth;
 
   const material = useMemo(() => {
     const mat = new PixelationMaterial();

@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 }
 
 const { entry, allExperiments } = Astro.props;
-const { title, date, description, scene, stripeLink } = entry.data;
+const { title, date, description, scene, aspectRatio = 16/9, tools = [], cavalryVersion, license, stripeLink } = entry.data;
 const playerUrl = buildPlayerUrl(scene, import.meta.env.BASE_URL.replace(/\/$/, ''));
 const formattedDate = date.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -61,8 +61,18 @@ const themeScript = generateThemeScript();
         font-family: system-ui, -apple-system, sans-serif;
       }
 
-      .stage { position: fixed; inset: 0; }
-      .stage iframe {
+      .stage {
+        position: fixed; inset: 8px 8px 8px 16px;
+        display: flex; align-items: center; justify-content: flex-end;
+      }
+      .stage-inner {
+        max-width: min(100%, calc((100vh - 16px) * var(--aspect-ratio)));
+        max-height: min(100%, calc((100vw - 24px) / var(--aspect-ratio)));
+        aspect-ratio: var(--aspect-ratio);
+        height: 100%;
+        border-radius: 12px; overflow: hidden;
+      }
+      .stage-inner iframe {
         width: 100%; height: 100%; border: none; display: block;
         touch-action: manipulation;
       }
@@ -96,6 +106,42 @@ const themeScript = generateThemeScript();
         line-height: 1.5; padding-top: 2px;
       }
 
+      .meta-label {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 10px; font-weight: 500;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        color: var(--mq-text-muted);
+      }
+
+      .made-with {
+        display: flex; flex-direction: column; gap: 8px;
+      }
+      .tools-list {
+        display: flex; flex-wrap: wrap; gap: 6px;
+      }
+      .tool-tag {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 11px; color: var(--mq-text-muted);
+        padding: 3px 8px; border-radius: 4px;
+        border: 1px solid var(--mq-panel-border);
+      }
+
+      .actions {
+        display: flex; flex-direction: column; gap: 8px;
+      }
+      .download-link, .buy-link {
+        font-size: 12px; text-decoration: none;
+        font-weight: 500; transition: opacity 0.2s ease;
+        padding: 0;
+      }
+      .download-link { color: var(--mq-text); }
+      .download-link:hover, .buy-link:hover { opacity: 0.7; }
+      .license-note {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 10px; color: var(--mq-text-muted);
+        line-height: 1.4;
+      }
+
       .nav-foot-wrap {
         display: flex; flex-direction: column; gap: 10px;
         border-top: 1px solid var(--mq-divider); padding-top: 12px;
@@ -110,11 +156,7 @@ const themeScript = generateThemeScript();
         color: var(--mq-text); background: var(--mq-panel-hover);
       }
       .nav-row .toggle { margin-left: auto; }
-      .buy-link {
-        font-size: 12px; color: var(--mq-accent); text-decoration: none;
-        font-weight: 500; padding: 0 10px; transition: opacity 0.2s ease;
-      }
-      .buy-link:hover { opacity: 0.7; }
+      .buy-link { color: var(--mq-accent); }
 
       @media (max-width: 600px) {
         .panel { left: 16px; right: 16px; max-width: none; padding: 12px 16px; }
@@ -123,7 +165,9 @@ const themeScript = generateThemeScript();
   </head>
   <body>
     <div class="stage">
-      <iframe src={playerUrl} allow="cross-origin-isolated" id="cavalry-player"></iframe>
+      <div class="stage-inner" style={`--aspect-ratio: ${aspectRatio};`}>
+        <iframe src={playerUrl} allow="cross-origin-isolated" id="cavalry-player"></iframe>
+      </div>
     </div>
 
     <div class="panel">
@@ -133,6 +177,31 @@ const themeScript = generateThemeScript();
         {description && <span class="desc">{description}</span>}
       </div>
 
+      {tools.length > 0 && (
+        <div class="made-with">
+          <span class="meta-label">
+            {cavalryVersion ? `Made in Cavalry ${cavalryVersion} with` : 'Made with'}
+          </span>
+          <div class="tools-list">
+            {tools.map((tool: string) => <span class="tool-tag">{tool}</span>)}
+          </div>
+        </div>
+      )}
+
+      {(license || stripeLink) && (
+        <div class="actions">
+          {license && (
+            <Fragment>
+              <a class="download-link" href={`${base}/cavalry/scenes/${scene}`} download>Download .cv</a>
+              <span class="license-note">{license}</span>
+            </Fragment>
+          )}
+          {stripeLink && (
+            <a class="buy-link" href={stripeLink} target="_blank" rel="noopener">Buy scene file</a>
+          )}
+        </div>
+      )}
+
       <div class="nav-foot-wrap">
         <div class="nav-row">
           <a href={`${import.meta.env.BASE_URL}`}>&larr; Back</a>
@@ -140,9 +209,6 @@ const themeScript = generateThemeScript();
           {next && <a href={`${base}/experiments/${next}`}>Next &rarr;</a>}
           <button class="toggle" id="theme-toggle" aria-label="Toggle theme">Light</button>
         </div>
-        {stripeLink && (
-          <a class="buy-link" href={stripeLink} target="_blank" rel="noopener">Buy scene file</a>
-        )}
       </div>
     </div>
 
