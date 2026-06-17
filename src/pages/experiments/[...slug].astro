@@ -13,13 +13,10 @@ export async function getStaticPaths() {
 }
 
 const { entry, allExperiments } = Astro.props;
-const { title, date, description, scene, aspectRatio = 16/9, tools = [], cavalryVersion, license, stripeLink } = entry.data;
+const { title, date, scene, aspectRatio = 16/9, tools = [], license, stripeLink } = entry.data;
 const playerUrl = buildPlayerUrl(scene, import.meta.env.BASE_URL.replace(/\/$/, ''));
-const formattedDate = date.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
+const dateDay = String(date.getUTCDate()).padStart(2, '0');
+const dateRest = `${String(date.getUTCMonth() + 1).padStart(2, '0')}${date.getUTCFullYear()}`;
 
 const navEntries = allExperiments.map((e: any) => ({ id: e.id, date: e.data.date }));
 const { prev, next } = getExperimentNav(navEntries, entry.id);
@@ -61,6 +58,11 @@ const themeScript = generateThemeScript();
         font-family: system-ui, -apple-system, sans-serif;
       }
 
+      .page {
+        --player-w: min(calc(100vw - 24px), calc((100vh - 16px) * var(--aspect-ratio)));
+        --content-right: calc(var(--player-w) + 24px);
+      }
+
       .stage {
         position: fixed; inset: 8px 8px 8px 16px;
         display: flex; align-items: center; justify-content: flex-end;
@@ -77,140 +79,162 @@ const themeScript = generateThemeScript();
         touch-action: manipulation;
       }
 
+      /* top bar */
+      .topbar {
+        position: fixed; top: 0; left: 0; right: var(--content-right);
+        height: 64px; padding: 0 28px;
+        display: flex; align-items: center;
+        z-index: 20;
+      }
+      .brand {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 24px; font-weight: 500; letter-spacing: 0.01em;
+        color: var(--mq-text);
+      }
+      .brand sup { font-size: 0.46em; font-weight: 400; }
+      .topnav {
+        position: absolute; left: 50%; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 4px;
+      }
+      .navlink, .toggle {
+        font-family: inherit; font-size: 13px; color: var(--mq-text-muted);
+        text-decoration: none; background: transparent; border: none; cursor: pointer;
+        padding: 6px 12px; border-radius: 6px;
+        transition: all 0.2s ease; white-space: nowrap;
+      }
+      .navlink:hover, .toggle:hover {
+        color: var(--mq-text); background: var(--mq-panel-hover);
+      }
+      .toggle { margin-left: auto; }
+
+      /* title card */
       .panel {
-        position: fixed;
-        top: 50%; left: 24px;
+        position: fixed; top: 50%; left: 28px;
         transform: translateY(-50%);
         background: var(--mq-panel-bg);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--mq-panel-border);
-        border-radius: 12px;
-        opacity: 0.82;
-        transition: opacity 0.3s ease;
+        border-radius: 14px;
+        opacity: 0.9; transition: opacity 0.3s ease;
         z-index: 10;
-        padding: 16px 20px; max-width: 340px;
-        display: flex; flex-direction: column; gap: 14px;
+        padding: 24px 28px; max-width: 348px;
+        display: flex; flex-direction: column; gap: 18px;
       }
       .panel:hover { opacity: 1; }
       @media (hover: none) { .panel { opacity: 1; } }
 
-      .panel-head { display: flex; flex-direction: column; gap: 6px; }
-      .panel-head h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
-      .panel-head .date {
-        font-family: ui-monospace, Menlo, monospace;
-        font-size: 12px; color: var(--mq-text-muted);
-      }
-      .panel-head .desc {
-        font-size: 13px; color: var(--mq-text-muted);
-        line-height: 1.5; padding-top: 2px;
+      .panel h1 {
+        font-size: 28px; font-weight: 600;
+        letter-spacing: -0.02em; line-height: 1.05;
       }
 
-      .meta-label {
-        font-family: ui-monospace, Menlo, monospace;
-        font-size: 10px; font-weight: 500;
-        letter-spacing: 0.06em; text-transform: uppercase;
-        color: var(--mq-text-muted);
-      }
-
-      .made-with {
-        display: flex; flex-direction: column; gap: 8px;
-      }
-      .tools-list {
-        display: flex; flex-wrap: wrap; gap: 6px;
-      }
+      .tools-list { display: flex; flex-wrap: wrap; gap: 6px; }
       .tool-tag {
         font-family: ui-monospace, Menlo, monospace;
-        font-size: 11px; color: var(--mq-text-muted);
-        padding: 3px 8px; border-radius: 4px;
+        font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+        color: var(--mq-text-muted);
+        padding: 4px 9px; border-radius: 5px;
         border: 1px solid var(--mq-panel-border);
       }
 
+      .meta-row {
+        display: flex; align-items: baseline;
+        justify-content: space-between; gap: 16px;
+      }
+      .date {
+        font-family: inherit;
+        font-size: 13px; letter-spacing: 0.01em;
+        color: var(--mq-text-muted);
+      }
+      .date b { color: var(--mq-text); font-weight: 700; }
+      .made-in { font-size: 12px; color: var(--mq-text-muted); white-space: nowrap; }
+
       .actions {
         display: flex; flex-direction: column; gap: 8px;
+        border-top: 1px solid var(--mq-divider); padding-top: 14px;
       }
       .download-link, .buy-link {
         font-size: 12px; text-decoration: none;
         font-weight: 500; transition: opacity 0.2s ease;
-        padding: 0;
       }
       .download-link { color: var(--mq-text); }
       .download-link:hover, .buy-link:hover { opacity: 0.7; }
+      .buy-link { color: var(--mq-accent); }
       .license-note {
         font-family: ui-monospace, Menlo, monospace;
-        font-size: 10px; color: var(--mq-text-muted);
-        line-height: 1.4;
+        font-size: 10px; color: var(--mq-text-muted); line-height: 1.4;
       }
 
-      .nav-foot-wrap {
-        display: flex; flex-direction: column; gap: 10px;
-        border-top: 1px solid var(--mq-divider); padding-top: 12px;
+      /* footer bar */
+      .footbar {
+        position: fixed; bottom: 0; left: 0; right: var(--content-right);
+        height: 56px; padding: 0 28px;
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 12px; color: var(--mq-text-muted);
+        z-index: 20;
       }
-      .nav-row { display: flex; align-items: center; gap: 4px; }
-      .nav-row a, .nav-row button {
-        font-family: inherit; font-size: 12px; color: var(--mq-text-muted);
-        text-decoration: none; background: transparent; border: none; cursor: pointer;
-        padding: 5px 10px; border-radius: 6px; transition: all 0.2s ease; white-space: nowrap;
-      }
-      .nav-row a:hover, .nav-row button:hover {
-        color: var(--mq-text); background: var(--mq-panel-hover);
-      }
-      .nav-row .toggle { margin-left: auto; }
-      .buy-link { color: var(--mq-accent); }
 
       @media (max-width: 600px) {
-        .panel { left: 16px; right: 16px; max-width: none; padding: 12px 16px; }
+        .topbar, .footbar { right: 0; }
+        .topnav { position: static; transform: none; margin: 0 auto; }
+        .panel { left: 16px; right: 16px; max-width: none; padding: 18px 18px; }
+        .panel h1 { font-size: 28px; }
       }
     </style>
   </head>
   <body>
-    <div class="stage">
-      <div class="stage-inner" style={`--aspect-ratio: ${aspectRatio};`}>
-        <iframe src={playerUrl} allow="cross-origin-isolated" id="cavalry-player"></iframe>
-      </div>
-    </div>
+    <main class="page" style={`--aspect-ratio: ${aspectRatio};`}>
+      <header class="topbar">
+        <span class="brand">MQ<sup>&trade;</sup></span>
+        <nav class="topnav">
+          <a class="navlink" href={`${import.meta.env.BASE_URL}`}>Gallery</a>
+          {prev && <a class="navlink" href={`${base}/experiments/${prev}`}>&larr; Prev</a>}
+          {next && <a class="navlink" href={`${base}/experiments/${next}`}>Next &rarr;</a>}
+        </nav>
+        <button class="toggle" id="theme-toggle" aria-label="Toggle theme">Dark</button>
+      </header>
 
-    <div class="panel">
-      <div class="panel-head">
+      <div class="stage">
+        <div class="stage-inner">
+          <iframe src={playerUrl} allow="cross-origin-isolated" id="cavalry-player"></iframe>
+        </div>
+      </div>
+
+      <div class="panel">
         <h1>{title}</h1>
-        <span class="date">{formattedDate}</span>
-        {description && <span class="desc">{description}</span>}
-      </div>
 
-      {tools.length > 0 && (
-        <div class="made-with">
-          <span class="meta-label">
-            {cavalryVersion ? `Made in Cavalry ${cavalryVersion} with` : 'Made with'}
-          </span>
+        {tools.length > 0 && (
           <div class="tools-list">
             {tools.map((tool: string) => <span class="tool-tag">{tool}</span>)}
           </div>
-        </div>
-      )}
+        )}
 
-      {(license || stripeLink) && (
-        <div class="actions">
-          {license && (
-            <Fragment>
-              <a class="download-link" href={`${base}/cavalry/scenes/${scene}`} download>Download .cv</a>
-              <span class="license-note">{license}</span>
-            </Fragment>
-          )}
-          {stripeLink && (
-            <a class="buy-link" href={stripeLink} target="_blank" rel="noopener">Buy scene file</a>
-          )}
+        <div class="meta-row">
+          <span class="date"><b>{dateDay}</b>{dateRest}</span>
+          <span class="made-in">Made in Cavalry</span>
         </div>
-      )}
 
-      <div class="nav-foot-wrap">
-        <div class="nav-row">
-          <a href={`${import.meta.env.BASE_URL}`}>Gallery</a>
-          {prev && <a href={`${base}/experiments/${prev}`}>&larr; Prev</a>}
-          {next && <a href={`${base}/experiments/${next}`}>Next &rarr;</a>}
-          <button class="toggle" id="theme-toggle" aria-label="Toggle theme">Light</button>
-        </div>
+        {(license || stripeLink) && (
+          <div class="actions">
+            {license && (
+              <Fragment>
+                <a class="download-link" href={`${base}/cavalry/scenes/${scene}`} download>Download .cv</a>
+                <span class="license-note">{license}</span>
+              </Fragment>
+            )}
+            {stripeLink && (
+              <a class="buy-link" href={stripeLink} target="_blank" rel="noopener">Buy scene file</a>
+            )}
+          </div>
+        )}
       </div>
-    </div>
+
+      <footer class="footbar">
+        <span>&copy;2026 Noah Webster-James</span>
+        <span>Creative Tech</span>
+      </footer>
+    </main>
 
     <script>
       const iframe = document.getElementById('cavalry-player') as HTMLIFrameElement | null;
