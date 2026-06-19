@@ -38,6 +38,7 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 
 ## Backlog / ideas
 
+- **Claude 101 for Designers** — education site + sellable React component library for Framer. Full brief: `notes/claude-101-for-designers.md`. Parked 2026-06-20, not yet prioritised. Build approach: Figma-first design system (tokens > components > sections), then Next.js + React + Tailwind, theme-driven. Doubles as a test case for Figma MCP / design skills pipeline.
 - Replace placeholder homepage UIPanel links (Instagram, Patreon, Scenery, Work with me) with real URLs.
 - Consider a `vitest exclude` for `.claude/worktrees/` so test counts can't get inflated again.
 - Detail-page layout: Direction B (framed 16:9 player on a themed stage) was mocked up and set aside in favour of A; revisit if the full-bleed letterboxing becomes a problem.
