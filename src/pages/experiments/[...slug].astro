@@ -60,7 +60,7 @@ const themeScript = generateThemeScript();
 
       .page {
         --player-w: min(calc(100vw - 24px), calc((100vh - 16px) * var(--aspect-ratio)));
-        --content-right: calc(var(--player-w) + 24px);
+        --content-right: min(calc(var(--player-w) + 24px), 60vw);
       }
 
       .stage {

@@ -26,6 +26,7 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 | 2026-06-16 | FIRST real scene published (`01` "Pilot: Time Offset + Stagger", portrait 9:16). Schema +`tools`/`cavalryVersion`/`license`/`aspectRatio`. Detail panel: "Made with" tool tags + download/license actions, fewer dividers. Scene in aspect-correct rounded inset container, anchored right (8px margins, 16px left). Homepage nodes respect thumbnail aspect ratio. 172 tests |
 | 2026-06-16 s2 | **On-scene control panel** — player renders a scene's Control Centre attributes as live widgets (top-right inside iframe, frosted blur, `scale(0.9)`), dynamic per-scene (`control-centre.js` pure+tested, `render-controls.js` DOM/WASM). **Custom HSV colour picker** (SV square + hue + hex) replaces the un-stylable native OS picker. Nav "← Back" → "Gallery". 203 tests. Cavalry web-player API: generic `setAttribute` (typed setters broken), no group API |
 | 2026-06-17 | **Detail-page type-treatment redesign** (from Noah's mockup). Full-width **top bar** (`MQ™` serif wordmark · centred `Gallery`/`← Prev`/`Next →` · theme toggle) + **footer bar** (©2026 Noah Webster-James · Creative Tech). Card rebuilt: 28px title (dropped "Pilot:"), **outlined mono-caps** tool tags wrapping 3+2, `DDMMYYYY` date with bold day, "Made in Cavalry" (no version). **Description removed from the page** (schema field kept). Left content zone bound to the player via `--player-w`/`--content-right` CSS vars. `01.md`: British "Colour Array", tags reordered, version 2.7.2. 203 tests. NOT pixel-perfect yet — Noah parked a pixel-push pass |
+| 2026-06-19 | **16:9 detail-page layout fix.** `--content-right` capped at `60vw` so topbar/footbar always get at least 40% viewport width. Previously, a 16:9 scene in a 16:9 viewport crushed them to ~0px. Verified across desktop/tablet/mobile and both themes. Portrait layout unaffected |
 
 ## Next up
 
@@ -43,7 +44,7 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 
 ## Known rough edges
 
-- Direction A keeps letterboxing: a 16:9 scene full-bleed on a tall viewport leaves margins (accepted tradeoff; real dark scenes look better than the white test scene).
+- Direction A keeps letterboxing: a 16:9 scene full-bleed on a tall viewport leaves margins (accepted tradeoff; real dark scenes look better than the white test scene). The topbar/footbar crush at matching aspect ratios is FIXED (2026-06-19), but at tablet width (~768px) the topbar elements are tight at ~307px (functional but not spacious).
 - Three.js chunk-size warning on build (expected, three.js is large).
 - `preview_screenshot` glitches on the WASM-player iframe (captures mid-paint); trust DOM `getBoundingClientRect`, screenshot a 404 scene for clean chrome captures.
 - **Linked scene assets:** the pilot scene (`01.cv`) references a linked image `A4 - 1.png` not shipped alongside it, so the player logs "Failed to decode image" and renders without it. Linked image/font assets must be copied into `public/cavalry/scenes/` next to the `.cv`. Need a publish-flow convention for this.
