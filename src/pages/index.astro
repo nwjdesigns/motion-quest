@@ -34,7 +34,6 @@ const themeScript = generateThemeScript();
         --mq-text-muted: #999999;
         --mq-panel-bg: rgba(255, 255, 255, 0.06);
         --mq-panel-border: rgba(255, 255, 255, 0.1);
-        --mq-accent: #9aff9a;
       }
       :root[data-theme="light"] {
         --mq-bg: #f5f5f5;
@@ -42,7 +41,9 @@ const themeScript = generateThemeScript();
         --mq-text-muted: #666666;
         --mq-panel-bg: rgba(0, 0, 0, 0.04);
         --mq-panel-border: rgba(0, 0, 0, 0.1);
-        --mq-accent: #2e7d32;
+      }
+      html, body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       }
     </style>
   </head>
@@ -51,12 +52,9 @@ const themeScript = generateThemeScript();
       client:only="react"
       experiments={experimentData}
       baseUrl={baseUrl}
-      links={[
+      footerLinks={[
         { label: 'Instagram', url: 'https://instagram.com/nwjdesigns' },
-        { label: 'Patreon', url: 'https://patreon.com/nwjdesigns' },
-        { label: 'Scenery', url: 'https://scenery.video' },
       ]}
-      workWithMeUrl="https://nwjdesigns.com/contact"
     />
   </body>
 </html>

@@ -10,9 +10,10 @@ import {
 import { computeGridLayout } from '../lib/grid-layout';
 import { computeSpiralLayout } from '../lib/spiral-layout';
 import { ExperimentNode } from './ExperimentNode';
-import { UIPanel, type ExternalLink } from './UIPanel';
+import { TopBar } from './TopBar';
+import { FooterBar } from './FooterBar';
 import { ThemeProvider, useTheme } from './ThemeContext';
-import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useLayoutShortcuts } from '../hooks/useLayoutShortcuts';
 import { resolveInitialTheme, type Theme } from '../lib/theme';
 import { deserializeCameraState } from '../lib/camera-state';
 import { interpolateRect, type ScreenRect } from '../lib/morph';
@@ -25,12 +26,16 @@ export interface ExperimentData {
   title: string;
 }
 
+export interface FooterLink {
+  label: string;
+  url: string;
+}
+
 interface ConstellationSceneProps {
   experiments: ExperimentData[];
   baseUrl: string;
   layout?: LayoutMode;
-  links?: ExternalLink[];
-  workWithMeUrl?: string;
+  footerLinks?: FooterLink[];
 }
 
 function SceneBackground() {
@@ -95,21 +100,19 @@ function ThemedScene({
   experiments,
   baseUrl,
   initialLayout,
-  links,
-  workWithMeUrl,
+  footerLinks,
   initialCameraState,
 }: {
   experiments: ExperimentData[];
   baseUrl: string;
   initialLayout: LayoutMode;
-  links: ExternalLink[];
-  workWithMeUrl?: string;
+  footerLinks: FooterLink[];
   initialCameraState: { position: [number, number, number]; target: { x: number; y: number; z: number } } | null;
 }) {
   const [layout, setLayout] = useState<LayoutMode>(initialLayout);
   const { theme, colors, toggleTheme } = useTheme();
   const [morphState, setMorphState] = useState<{ slug: string; rect: ScreenRect } | null>(null);
-  const isTouch = useMediaQuery('(hover: none)');
+  useLayoutShortcuts(setLayout);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -172,15 +175,8 @@ function ThemedScene({
         />
       </Canvas>
 
-      <UIPanel
-        layout={layout}
-        onLayoutChange={setLayout}
-        links={links}
-        workWithMeUrl={workWithMeUrl}
-        theme={theme}
-        onThemeToggle={toggleTheme}
-        isTouch={isTouch}
-      />
+      <TopBar theme={theme} onThemeToggle={toggleTheme} />
+      <FooterBar links={footerLinks} />
 
       {morphState && (
         <MorphOverlay
@@ -197,8 +193,7 @@ export default function ConstellationScene({
   experiments,
   baseUrl,
   layout: initialLayout = 'constellation',
-  links = [],
-  workWithMeUrl,
+  footerLinks = [],
 }: ConstellationSceneProps) {
   const initial = useMemo(() => {
     const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('mq-theme') : null;
@@ -225,8 +220,7 @@ export default function ConstellationScene({
         experiments={experiments}
         baseUrl={baseUrl}
         initialLayout={initialLayout}
-        links={links}
-        workWithMeUrl={workWithMeUrl}
+        footerLinks={footerLinks}
         initialCameraState={initialCameraState}
       />
     </ThemeProvider>

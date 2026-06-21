@@ -1,37 +1,51 @@
-# Next Session: Cavalry Lab — detail-page pixel-push (+ real content)
+# Next Session: Cavalry Lab — multi-agent build of homepage identity (#16-#21)
 
 ## Context
 
-Site live at https://nwjdesigns.github.io/motion-quest/. Repo public. **203 Vitest tests across 21 files.** Astro 6, React, R3F, GitHub Pages, Cavalry WASM player. Full status in `ROADMAP.md`.
+Site live at https://nwjdesigns.github.io/motion-quest/. Repo public. **220 Vitest tests across 23 files.** Astro 6, React, R3F, GitHub Pages, Cavalry WASM player. Full status in `ROADMAP.md`. PRD: `prd-homepage-identity.md` (also GitHub issue [#14](https://github.com/nwjdesigns/motion-quest/issues/14)).
 
-Last session (2026-06-19) fixed a **16:9 layout bug**: `--content-right` in the detail page was crushing the topbar/footbar to ~0px when a landscape scene filled a landscape viewport. Fixed by capping `--content-right` at `60vw`. Verified across desktop (1440x810), tablet (768x1024), mobile (375x812), both themes, portrait and landscape scenes.
+Last session (2026-06-21) shipped issue **#15 "Chrome, typography + keyboard shortcuts"**: new shared `TopBar` (SVG pinwheel mark + theme toggle, 64px), `FooterBar` (copyright + Instagram, 56px), `useLayoutShortcuts` hook (1/2/3 keys for layout). UIPanel killed. Fully monochrome (no `--mq-accent`). Helvetica Neue primary typeface. Detail page updated (SVG mark replaces `MQ™` text, footer updated). All built TDD.
 
-Prior session (2026-06-17) shipped the **detail-page type-treatment redesign**: top bar (`MQ™` · nav · theme toggle), restructured title card, footer bar. Description removed from the page.
+## What to build: issues #16-#21
 
-## Priority 1: detail-page pixel-push
+Noah said **"next sesh is a multi agent build"** so these should run in parallel where possible. All specs in their GitHub issues. The PRD's "Build Sequence" section gives the canonical order and dependencies.
 
-Noah's verdict (2026-06-17): **"still quite a bit to pixel push but for now good enough."** It's NOT pixel-perfect to his mockup. **Ask him to re-paste the target mockup (or a fresh annotated screenshot)** and treat it as the source of truth. Likely areas (he saw these but DECLINED them last round — only act if he raises them):
+### Parallelism map
 
-- **Left-rail alignment:** the card *text* (title/tags/date) is indented ~28px from the `MQ™` wordmark and the `©2026` footer — the card's *edge* aligns with them, the text doesn't.
-- **"Made in Cavalry" placement:** currently pushed to the far card edge by `space-between`.
-- **Spacing/proportions** generally — title size, tag padding, card padding, row gaps. Measure the DOM before eyeballing.
+**Can run independently (no cross-dependencies):**
+- [#16](https://github.com/nwjdesigns/motion-quest/issues/16) Dynamic mark behaviour engine
+- [#17](https://github.com/nwjdesigns/motion-quest/issues/17) Carousel dot indicator
+- [#18](https://github.com/nwjdesigns/motion-quest/issues/18) Entrance choreography
+- [#20](https://github.com/nwjdesigns/motion-quest/issues/20) Hover/interaction microinteractions
 
-### How to work (validated)
-- **Measure before guessing.** Read real geometry first, offer concrete candidates. Don't freelance changes he didn't name.
-- **Keep adjacent metadata in ONE typeface.**
-- Match the mockup 1:1. Verify in the preview pane, drive real interactions, read state back.
+**Depends on #16 (mark states drive transition cues):**
+- [#19](https://github.com/nwjdesigns/motion-quest/issues/19) Page transition: thumbnail morph to player
 
-## Priority 2: real content + linked-asset convention (unchanged)
+**Depends on all others:**
+- [#21](https://github.com/nwjdesigns/motion-quest/issues/21) Polish + responsive audit
 
-- `exp-01`..`exp-30` still placeholders. Noah hands a `.cv` path; handle copy + markdown + commit DIRECTLY. Flow: `.cv` → `public/cavalry/scenes/`, `.png` → `public/cavalry/`, write `src/content/experiments/<slug>.md` (include `aspectRatio`; portrait = `0.5625`), restart dev server.
-- **Open:** do real scenes REPLACE `exp-01..30` slugs or land as new named experiments?
-- **Linked assets:** `01.cv` references `A4 - 1.png` not shipped beside it. Copy linked image/font assets into `public/cavalry/scenes/` next to the `.cv`.
+### Key design decisions (from grill, locked in PRD)
+
+- **Mark behaviour:** state machine with idle (slow spin), hover (speed bump), orbit-reactive (directional rotation tracks camera angle), nav (CW burst on Next, CCW on Prev), loading (fast spin). Uses `currentColor` for CSS theme reactivity.
+- **Carousel indicator:** 7-dot sliding window. Active dot is elongated (pill). Edge dots scale down. Centered below the nav on detail page. Dots are monochrome (`--mq-text`).
+- **Entrance:** stagger load-in (sequence TBD by Noah, build the mechanism and let him define order). No chromatic/iridescent effects.
+- **Page transition:** thumbnail morphs into player (forward), player morphs back to node (reverse). Astro View Transitions API. Snapshot approach for 3D-to-DOM handoff (capture canvas to image, animate image, swap to real player).
+- **Hover effects:** monochrome only. Button hover: bg fill + colour lift, 0.2s (the detail-page nav treatment Noah loves). No iridescent anywhere.
+- **Monochrome:** experiment thumbnails are the ONLY colour on page. Everything else uses `--mq-text` / `--mq-bg` / `--mq-text-muted`.
+- **Times New Roman:** held in reserve. Not used yet.
+
+### Architecture notes for agents
+
+- `TopBar` already renders the SVG mark (32px homepage, 24px detail). #16 adds animation to this existing SVG.
+- `useLayoutShortcuts` is a standalone hook in `src/hooks/`. Same pattern for any new hooks.
+- Both pages import `TopBar` and `FooterBar`. Homepage via `ConstellationScene.tsx` (React), detail page via `[...slug].astro` (Astro + inline).
+- Morph transition (#19) already has a basic `MorphOverlay` in ConstellationScene.tsx. The PRD wants this replaced with Astro View Transitions.
+- Test files live at `tests/` root, named `<feature>.test.ts`. React components use `@testing-library/react`. Hooks use `renderHook` + `act`.
 
 ## Known rough edges
 
-- **Tablet topbar tightness:** at 768px wide with a 16:9 scene, the topbar has ~307px. Functional but tight — brand and nav can run close. Mobile breakpoint (600px) handles smaller widths.
-- **Cavalry web-player typed attribute setters are BROKEN** — use generic `setAttribute({r,g,b,a})`. No group-name API.
-- Scene 01 only exposes 2 Control Centre attributes (backgroundColor + strength). Menu/toggle/bounded-slider widgets are built but UNTESTED live.
-- Astro content cache can go stale when a schema field is added post-sync. Clear `.astro/data-store.json` + `.astro/collections`, restart.
-- `preview_screenshot` glitches on the WASM canvas paint, but captures the HTML chrome fine.
-- Untracked `after-effects/text_you_later_main.aep` is unrelated AE work — leave it.
+- Cavalry web-player typed attribute setters are BROKEN. Use generic `setAttribute`.
+- `preview_screenshot` glitches on WASM canvas. Trust DOM measurements, screenshot for chrome.
+- Scene 01 references a linked image not shipped. Unrelated to this work.
+- Astro content cache can go stale. Clear `.astro/data-store.json` + `.astro/collections` if needed.
+- Untracked `after-effects/text_you_later_main.aep` is unrelated AE work.

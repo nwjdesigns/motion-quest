@@ -68,7 +68,6 @@ describe('getCssVariables', () => {
     expect(vars['--mq-text-muted']).toBeDefined();
     expect(vars['--mq-panel-bg']).toBeDefined();
     expect(vars['--mq-panel-border']).toBeDefined();
-    expect(vars['--mq-accent']).toBeDefined();
   });
 
   test('returns object with expected CSS variable keys for light theme', () => {
@@ -78,7 +77,6 @@ describe('getCssVariables', () => {
     expect(vars['--mq-text-muted']).toBeDefined();
     expect(vars['--mq-panel-bg']).toBeDefined();
     expect(vars['--mq-panel-border']).toBeDefined();
-    expect(vars['--mq-accent']).toBeDefined();
   });
 
   test('dark theme has dark background variable', () => {

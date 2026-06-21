@@ -4,7 +4,7 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 
 - **Live:** https://nwjdesigns.github.io/motion-quest/
 - **Stack:** Astro 6 + React + R3F (three.js directly, no drei), content collection (Zod), GitHub Pages deploy, Cavalry WASM player (coi-serviceworker for COOP/COEP)
-- **Tests:** 203 Vitest across 21 files
+- **Tests:** 220 Vitest across 23 files
 - **Renders are portrait-majority** (9:16, for Instagram Reels) — design portrait-first
 - **Spec:** `prd-cavalry-lab.md` · **Next session:** `NEXT-SESSION-PROMPT.md`
 
@@ -27,19 +27,25 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 | 2026-06-16 s2 | **On-scene control panel** — player renders a scene's Control Centre attributes as live widgets (top-right inside iframe, frosted blur, `scale(0.9)`), dynamic per-scene (`control-centre.js` pure+tested, `render-controls.js` DOM/WASM). **Custom HSV colour picker** (SV square + hue + hex) replaces the un-stylable native OS picker. Nav "← Back" → "Gallery". 203 tests. Cavalry web-player API: generic `setAttribute` (typed setters broken), no group API |
 | 2026-06-17 | **Detail-page type-treatment redesign** (from Noah's mockup). Full-width **top bar** (`MQ™` serif wordmark · centred `Gallery`/`← Prev`/`Next →` · theme toggle) + **footer bar** (©2026 Noah Webster-James · Creative Tech). Card rebuilt: 28px title (dropped "Pilot:"), **outlined mono-caps** tool tags wrapping 3+2, `DDMMYYYY` date with bold day, "Made in Cavalry" (no version). **Description removed from the page** (schema field kept). Left content zone bound to the player via `--player-w`/`--content-right` CSS vars. `01.md`: British "Colour Array", tags reordered, version 2.7.2. 203 tests. NOT pixel-perfect yet — Noah parked a pixel-push pass |
 | 2026-06-19 | **16:9 detail-page layout fix.** `--content-right` capped at `60vw` so topbar/footbar always get at least 40% viewport width. Previously, a 16:9 scene in a 16:9 viewport crushed them to ~0px. Verified across desktop/tablet/mobile and both themes. Portrait layout unaffected |
+| 2026-06-21 | **Homepage identity pass: PRD + issue #15 shipped.** Full identity PRD written (issue [#14](https://github.com/nwjdesigns/motion-quest/issues/14)), sliced into 7 issues ([#15](https://github.com/nwjdesigns/motion-quest/issues/15)-[#21](https://github.com/nwjdesigns/motion-quest/issues/21)). #15 "Chrome, typography + keyboard shortcuts" built via TDD: new `TopBar` (64px, SVG pinwheel mark + theme toggle), `FooterBar` (56px, copyright + Instagram), `useLayoutShortcuts` hook (1/2/3 keys replace UIPanel layout toggle). UIPanel killed. `--mq-accent` removed (fully monochrome). Helvetica Neue set as primary typeface. Detail page: `MQ™` text replaced with SVG mark (24px), footer updated. 220 tests across 23 files |
 
 ## Next up
 
-1. **Detail-page pixel-push (ACTIVE — parked mid-polish).** The type-treatment redesign SHIPPED 2026-06-17 (top bar + card + footer, see Shipped), but Noah: "still quite a bit to pixel push but for now good enough." Open candidates he saw but DECLINED this round (only revisit if he raises them): (a) the card text is indented ~28px from the `MQ™`/`©2026` left rail — the card *edge* aligns, the text doesn't; (b) "Made in Cavalry" sits at the far card edge via `space-between`. Also un-checked: real-device/responsive behaviour of the new top-bar/footer bound-to-player layout, and the dark-theme read of the card. Treat his next mockup/screenshot as source of truth.
-2. **Real content.** `exp-01`..`exp-30` still placeholders (thumbnail + `.md`, no `.cv`); `particle-grid` + `01` are real. Noah provides the `.cv` path, Claude handles copy + markdown + commit. Open: do real scenes REPLACE the exp-01..30 slugs or land as new named experiments?
-3. **Compositional/design craft.** Homepage identity (no visible title/author), typography (system-ui everywhere), entrance animations, panel design language. Noah flagged the site reads "low craft."
-3. **Detail-page mobile.** The redesigned floating panels do not collapse on touch like the homepage UIPanel (no `☰` toggle). Add a touch-collapse + real-device gesture check (pinch/drag/tap can't be verified in desktop preview).
-4. **Scene interactivity — control panel SHIPPED (2026-06-16 s2).** The player now renders a scene's Control Centre attributes as live widgets (color/slider/scrubber/menu/toggle/text), driven via generic `setAttribute`; cursor still auto-binds `double2`/`int2`. Scenes need controls exposed in Cavalry's Control Centre (Noah's side). Menu/toggle/bounded-slider widgets are built but UNTESTED live (scene 01 has none) — verify with a scene that exposes them.
+1. **Homepage identity pass #16-#21 (ACTIVE).** The remaining 6 issues from the identity PRD. Noah said "next sesh is a multi-agent build" so these can run in parallel:
+   - [#16](https://github.com/nwjdesigns/motion-quest/issues/16) Dynamic mark behaviour engine (state machine: idle/hover/orbit/nav/loading)
+   - [#17](https://github.com/nwjdesigns/motion-quest/issues/17) Carousel dot indicator (7-dot sliding window, active elongated, edge dots scale)
+   - [#18](https://github.com/nwjdesigns/motion-quest/issues/18) Entrance choreography (staggered load sequence)
+   - [#19](https://github.com/nwjdesigns/motion-quest/issues/19) Page transition: thumbnail morph to player (forward + reverse, Astro View Transitions, snapshot approach for 3D->DOM)
+   - [#20](https://github.com/nwjdesigns/motion-quest/issues/20) Hover/interaction microinteractions (button hover effects, no iridescent)
+   - [#21](https://github.com/nwjdesigns/motion-quest/issues/21) Polish + responsive audit
+2. **Detail-page pixel-push (PARKED).** Noah: "still quite a bit to pixel push but for now good enough." Only revisit when he raises it with a mockup/screenshot.
+3. **Real content.** `exp-01`..`exp-30` still placeholders (thumbnail + `.md`, no `.cv`); `particle-grid` + `01` are real. Noah provides the `.cv` path, Claude handles copy + markdown + commit. Open: do real scenes REPLACE the exp-01..30 slugs or land as new named experiments?
+4. **Detail-page mobile.** The redesigned floating panels do not collapse on touch like the homepage UIPanel did (no hamburger toggle). Add a touch-collapse + real-device gesture check.
 
 ## Backlog / ideas
 
 - **Claude 101 for Designers** — education site + sellable React component library for Framer. Full brief: `notes/claude-101-for-designers.md`. Parked 2026-06-20, not yet prioritised. Build approach: Figma-first design system (tokens > components > sections), then Next.js + React + Tailwind, theme-driven. Doubles as a test case for Figma MCP / design skills pipeline.
-- Replace placeholder homepage UIPanel links (Instagram, Patreon, Scenery, Work with me) with real URLs.
+- Times New Roman held in reserve for accent typography (headlines, pull quotes). Not used yet. Evaluate after identity pass ships.
 - Consider a `vitest exclude` for `.claude/worktrees/` so test counts can't get inflated again.
 - Detail-page layout: Direction B (framed 16:9 player on a themed stage) was mocked up and set aside in favour of A; revisit if the full-bleed letterboxing becomes a problem.
 

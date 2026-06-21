@@ -39,7 +39,6 @@ export interface CssVariables {
   '--mq-text-muted': string;
   '--mq-panel-bg': string;
   '--mq-panel-border': string;
-  '--mq-accent': string;
 }
 
 export function getCssVariables(theme: Theme): CssVariables {
@@ -50,7 +49,6 @@ export function getCssVariables(theme: Theme): CssVariables {
       '--mq-text-muted': '#999999',
       '--mq-panel-bg': 'rgba(255, 255, 255, 0.06)',
       '--mq-panel-border': 'rgba(255, 255, 255, 0.1)',
-      '--mq-accent': '#9aff9a',
     };
   }
   return {
@@ -59,7 +57,6 @@ export function getCssVariables(theme: Theme): CssVariables {
     '--mq-text-muted': '#666666',
     '--mq-panel-bg': 'rgba(0, 0, 0, 0.04)',
     '--mq-panel-border': 'rgba(0, 0, 0, 0.1)',
-    '--mq-accent': '#2e7d32',
   };
 }
 
