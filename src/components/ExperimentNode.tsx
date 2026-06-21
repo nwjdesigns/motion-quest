@@ -15,7 +15,7 @@ interface ExperimentNodeProps {
   title: string;
   slug: string;
   baseUrl: string;
-  onNavigate?: (slug: string, screenRect: ScreenRect) => void;
+  onNavigate?: (slug: string, screenRect: ScreenRect | null, thumbnailUrl: string) => void;
 }
 
 const springStiffness = 8;
@@ -108,7 +108,7 @@ export function ExperimentNode({
         size.height,
       );
 
-      onNavigate(slug, rect);
+      onNavigate(slug, rect, thumbnailUrl);
       return;
     }
 

@@ -1,4 +1,4 @@
-import { Suspense, useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { Suspense, useState, useMemo, useEffect, useCallback } from 'react';
 import type { CSSProperties } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from './OrbitControls';
@@ -20,7 +20,10 @@ import { HOMEPAGE_SCALE } from '../lib/mark-engine';
 import { useEntranceChoreography } from '../hooks/useEntranceChoreography';
 import { resolveInitialTheme, type Theme } from '../lib/theme';
 import { deserializeCameraState } from '../lib/camera-state';
-import { interpolateRect, type ScreenRect } from '../lib/morph';
+import type { ScreenRect } from '../lib/morph';
+import { centreScreenRect } from '../lib/transition-orchestrator';
+import { buildChromeExitStyle } from '../lib/morph-animation';
+import { MorphSnapshot } from './MorphSnapshot';
 
 export type LayoutMode = 'constellation' | 'grid' | 'spiral';
 
@@ -47,59 +50,6 @@ function SceneBackground() {
   return <color attach="background" args={[colors.background]} />;
 }
 
-function MorphOverlay({
-  startRect,
-  slug,
-  baseUrl,
-}: {
-  startRect: ScreenRect;
-  slug: string;
-  baseUrl: string;
-}) {
-  const overlayRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = overlayRef.current;
-    if (!el) return;
-
-    el.style.left = `${startRect.x}px`;
-    el.style.top = `${startRect.y}px`;
-    el.style.width = `${startRect.width}px`;
-    el.style.height = `${startRect.height}px`;
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        el.style.left = '0px';
-        el.style.top = '0px';
-        el.style.width = '100vw';
-        el.style.height = '100vh';
-      });
-    });
-
-    const onEnd = () => {
-      window.location.href = `${baseUrl}/experiments/${slug}`;
-    };
-    el.addEventListener('transitionend', onEnd, { once: true });
-
-    const fallback = setTimeout(onEnd, 500);
-    return () => clearTimeout(fallback);
-  }, [startRect, slug, baseUrl]);
-
-  return (
-    <div
-      ref={overlayRef}
-      style={{
-        position: 'fixed',
-        background: 'var(--mq-bg, #0a0a0a)',
-        transition: 'all 350ms cubic-bezier(0.4, 0, 0.2, 1)',
-        zIndex: 9999,
-        pointerEvents: 'none',
-        borderRadius: '4px',
-      }}
-    />
-  );
-}
-
 function ThemedScene({
   experiments,
   baseUrl,
@@ -115,8 +65,9 @@ function ThemedScene({
 }) {
   const [layout, setLayout] = useState<LayoutMode>(initialLayout);
   const { theme, colors, toggleTheme } = useTheme();
-  const [morphState, setMorphState] = useState<{ slug: string; rect: ScreenRect } | null>(null);
+  const [morphState, setMorphState] = useState<{ slug: string; rect: ScreenRect; thumbnailUrl: string } | null>(null);
   const [markHover, setMarkHover] = useState(false);
+  const [chromeExiting, setChromeExiting] = useState(false);
   useLayoutShortcuts(setLayout);
 
   // Mark behaviour engine
@@ -161,12 +112,16 @@ function ThemedScene({
     }
   }, [inputs, layout]);
 
-  const handleNavigate = useCallback((slug: string, rect: ScreenRect) => {
+  const handleNavigate = useCallback((slug: string, rect: ScreenRect | null, thumbnailUrl: string) => {
     mark.triggerNav('forward');
-    setMorphState({ slug, rect });
+    const resolvedRect = rect ?? centreScreenRect(window.innerWidth, window.innerHeight);
+    setMorphState({ slug, rect: resolvedRect, thumbnailUrl });
   }, [mark]);
 
   const cameraPosition: [number, number, number] = initialCameraState?.position ?? [0, 0, 12];
+
+  const chromeExitStyle = chromeExiting ? buildChromeExitStyle() : undefined;
+  const chromeExitStyleFooter = chromeExiting ? { ...buildChromeExitStyle(), transform: 'translateY(8px)' } : undefined;
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: colors.background, position: 'relative' }}>
@@ -205,7 +160,7 @@ function ThemedScene({
       </Canvas>
       </div>
 
-      <div style={enterStyle('topbar')}>
+      <div style={chromeExitStyle ?? enterStyle('topbar')}>
         <TopBar
           theme={theme}
           onThemeToggle={toggleTheme}
@@ -214,15 +169,17 @@ function ThemedScene({
           onMarkHoverChange={setMarkHover}
         />
       </div>
-      <div style={enterStyle('footer')}>
+      <div style={chromeExitStyleFooter ?? enterStyle('footer')}>
         <FooterBar links={footerLinks} />
       </div>
 
       {morphState && (
-        <MorphOverlay
-          startRect={morphState.rect}
+        <MorphSnapshot
+          sourceRect={morphState.rect}
+          thumbnailUrl={morphState.thumbnailUrl}
           slug={morphState.slug}
           baseUrl={baseUrl}
+          onChromeExit={() => setChromeExiting(true)}
         />
       )}
     </div>
