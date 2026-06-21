@@ -1,5 +1,7 @@
 import { getViteConfig } from 'astro/config';
 
 export default getViteConfig({
-  test: {},
+  test: {
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.claude/worktrees/**'],
+  },
 });

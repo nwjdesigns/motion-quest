@@ -36,7 +36,7 @@ export function FooterBar({ links = [] }: FooterBarProps) {
               style={{
                 color: 'var(--mq-text-muted)',
                 textDecoration: 'none',
-                transition: 'opacity 0.2s ease',
+                transition: 'opacity 200ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               {link.label}

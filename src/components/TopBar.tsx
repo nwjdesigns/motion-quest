@@ -111,7 +111,7 @@ export function TopBar({
               textDecoration: 'none',
               padding: '6px 12px',
               borderRadius: '6px',
-              transition: 'all 0.2s ease',
+              transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
             Gallery
@@ -125,7 +125,7 @@ export function TopBar({
                 textDecoration: 'none',
                 padding: '6px 12px',
                 borderRadius: '6px',
-                transition: 'all 0.2s ease',
+                transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               &larr; Prev
@@ -140,7 +140,7 @@ export function TopBar({
                 textDecoration: 'none',
                 padding: '6px 12px',
                 borderRadius: '6px',
-                transition: 'all 0.2s ease',
+                transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               Next &rarr;
@@ -162,7 +162,7 @@ export function TopBar({
           fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
           color: 'var(--mq-text-muted)',
           background: 'transparent',
-          transition: 'all 0.2s ease',
+          transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
         {isDark ? 'Light' : 'Dark'}

@@ -109,7 +109,7 @@ const themeScript = generateThemeScript();
         font-family: inherit; font-size: 13px; color: var(--mq-text-muted);
         text-decoration: none; background: transparent; border: none; cursor: pointer;
         padding: 6px 12px; border-radius: 6px;
-        transition: all 0.2s ease; white-space: nowrap;
+        transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap;
       }
       .navlink:hover, .toggle:hover {
         color: var(--mq-text); background: var(--mq-panel-hover);
@@ -149,7 +149,7 @@ const themeScript = generateThemeScript();
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--mq-panel-border);
         border-radius: 14px;
-        opacity: 0.9; transition: opacity 0.3s ease;
+        opacity: 0.9; transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 10;
         padding: 24px 28px; max-width: 348px;
         display: flex; flex-direction: column; gap: 18px;
@@ -189,11 +189,19 @@ const themeScript = generateThemeScript();
       }
       .download-link, .buy-link {
         font-size: 12px; text-decoration: none;
-        font-weight: 500; transition: opacity 0.2s ease;
+        font-weight: 500; color: var(--mq-text);
+        position: relative; display: inline-block;
       }
-      .download-link { color: var(--mq-text); }
-      .download-link:hover, .buy-link:hover { opacity: 0.7; }
-      .buy-link { color: var(--mq-text); }
+      .download-link::after, .buy-link::after {
+        content: '';
+        position: absolute; left: 0; bottom: -1px;
+        width: 0; height: 1px;
+        background: var(--mq-text);
+        transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .download-link:hover::after, .buy-link:hover::after {
+        width: 100%;
+      }
       .license-note {
         font-family: ui-monospace, Menlo, monospace;
         font-size: 10px; color: var(--mq-text-muted); line-height: 1.4;
@@ -227,9 +235,17 @@ const themeScript = generateThemeScript();
 
       @media (max-width: 600px) {
         .topbar, .footbar { right: 0; }
+        .topbar { padding: 0 16px; gap: 8px; }
+        .brand svg { width: 20px; height: 20px; }
         .topnav { position: static; transform: none; margin: 0 auto; }
+        .navlink, .toggle { font-size: 12px; padding: 5px 8px; }
         .panel { left: 16px; right: 16px; max-width: none; padding: 18px 18px; }
         .panel h1 { font-size: 28px; }
+        .footbar {
+          padding: 0 16px; gap: 8px;
+          flex-wrap: wrap; justify-content: center;
+          height: auto; min-height: 44px; padding-top: 8px; padding-bottom: 8px;
+        }
       }
     </style>
   </head>
@@ -242,7 +258,7 @@ const themeScript = generateThemeScript();
           </svg>
         </span>
         <nav class="topnav">
-          <a class="navlink" href={`${import.meta.env.BASE_URL}`}>Gallery</a>
+          <a class="navlink" href={`${import.meta.env.BASE_URL}`} data-gallery-link>Gallery</a>
           {prev && <a class="navlink" href={`${base}/experiments/${prev}`}>&larr; Prev</a>}
           {carousel.visibleIndices.length > 0 && (
             <span class="carousel" aria-label={`Experiment ${currentIndex + 1} of ${sortedExperiments.length}`}>
@@ -298,7 +314,7 @@ const themeScript = generateThemeScript();
 
       <footer class="footbar chrome-enter-up">
         <span>&copy;2026 Noah Webster-James</span>
-        <a href="https://instagram.com/nwjdesigns" target="_blank" rel="noopener noreferrer" style="color: var(--mq-text-muted); text-decoration: none; transition: opacity 0.2s ease;">Instagram</a>
+        <a href="https://instagram.com/nwjdesigns" target="_blank" rel="noopener noreferrer" style="color: var(--mq-text-muted); text-decoration: none; transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);">Instagram</a>
       </footer>
     </main>
 
@@ -334,6 +350,39 @@ const themeScript = generateThemeScript();
         localStorage.setItem('mq-theme', next);
         syncToggleLabel();
         postTheme();
+      });
+
+      // --- Reverse morph: Gallery link + browser back ---
+      function capturePlayerRect(): { x: number; y: number; width: number; height: number } | null {
+        const stageInner = document.querySelector('.stage-inner');
+        if (!stageInner) return null;
+        const r = stageInner.getBoundingClientRect();
+        return { x: r.x, y: r.y, width: r.width, height: r.height };
+      }
+
+      function storeReverseMorph(rect: { x: number; y: number; width: number; height: number }) {
+        sessionStorage.setItem('mq-reverse-morph', JSON.stringify({
+          sourceRect: rect,
+          slug: window.location.pathname.split('/').filter(Boolean).pop() || '',
+          timestamp: Date.now(),
+        }));
+      }
+
+      const galleryLink = document.querySelector('[data-gallery-link]') as HTMLAnchorElement | null;
+      galleryLink?.addEventListener('click', (e) => {
+        const rect = capturePlayerRect();
+        if (rect) {
+          e.preventDefault();
+          storeReverseMorph(rect);
+          window.location.href = galleryLink.href;
+        }
+      });
+
+      window.addEventListener('popstate', () => {
+        const rect = capturePlayerRect();
+        if (rect) {
+          storeReverseMorph(rect);
+        }
       });
     </script>
   </body>

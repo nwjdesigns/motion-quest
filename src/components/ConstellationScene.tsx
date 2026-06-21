@@ -1,4 +1,4 @@
-import { Suspense, useState, useMemo, useEffect, useCallback } from 'react';
+import { Suspense, useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import type { CSSProperties } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from './OrbitControls';
@@ -24,6 +24,83 @@ import type { ScreenRect } from '../lib/morph';
 import { centreScreenRect } from '../lib/transition-orchestrator';
 import { buildChromeExitStyle } from '../lib/morph-animation';
 import { MorphSnapshot } from './MorphSnapshot';
+
+interface ReverseMorphData {
+  sourceRect: ScreenRect;
+  slug: string;
+  timestamp: number;
+}
+
+function readReverseMorphData(): ReverseMorphData | null {
+  try {
+    const raw = sessionStorage.getItem('mq-reverse-morph');
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (Date.now() - data.timestamp > 5000) {
+      sessionStorage.removeItem('mq-reverse-morph');
+      return null;
+    }
+    return data as ReverseMorphData;
+  } catch {
+    return null;
+  }
+}
+
+function ReverseMorphOverlay({
+  sourceRect,
+  targetCentre,
+  onComplete,
+}: {
+  sourceRect: ScreenRect;
+  targetCentre: { x: number; y: number };
+  onComplete: () => void;
+}) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = overlayRef.current;
+    if (!el) return;
+
+    el.style.left = `${sourceRect.x}px`;
+    el.style.top = `${sourceRect.y}px`;
+    el.style.width = `${sourceRect.width}px`;
+    el.style.height = `${sourceRect.height}px`;
+    el.style.opacity = '1';
+    el.style.transform = 'scale(1)';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const targetSize = 160;
+        el.style.left = `${targetCentre.x - targetSize / 2}px`;
+        el.style.top = `${targetCentre.y - targetSize / 2}px`;
+        el.style.width = `${targetSize}px`;
+        el.style.height = `${targetSize * (9 / 16)}px`;
+        el.style.opacity = '0';
+        el.style.transform = 'scale(0.5)';
+      });
+    });
+
+    const onEnd = () => onComplete();
+    el.addEventListener('transitionend', onEnd, { once: true });
+
+    const fallback = setTimeout(onEnd, 500);
+    return () => clearTimeout(fallback);
+  }, [sourceRect, targetCentre, onComplete]);
+
+  return (
+    <div
+      ref={overlayRef}
+      style={{
+        position: 'fixed',
+        background: 'var(--mq-bg, #0a0a0a)',
+        transition: 'all 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+        zIndex: 9999,
+        pointerEvents: 'none',
+        borderRadius: '4px',
+      }}
+    />
+  );
+}
 
 export type LayoutMode = 'constellation' | 'grid' | 'spiral';
 
@@ -68,7 +145,16 @@ function ThemedScene({
   const [morphState, setMorphState] = useState<{ slug: string; rect: ScreenRect; thumbnailUrl: string } | null>(null);
   const [markHover, setMarkHover] = useState(false);
   const [chromeExiting, setChromeExiting] = useState(false);
+  const [reverseMorph, setReverseMorph] = useState<ReverseMorphData | null>(null);
   useLayoutShortcuts(setLayout);
+
+  useEffect(() => {
+    const data = readReverseMorphData();
+    if (data) {
+      sessionStorage.removeItem('mq-reverse-morph');
+      setReverseMorph(data);
+    }
+  }, []);
 
   // Mark behaviour engine
   const mark = useMarkBehaviour({
@@ -180,6 +266,14 @@ function ThemedScene({
           slug={morphState.slug}
           baseUrl={baseUrl}
           onChromeExit={() => setChromeExiting(true)}
+        />
+      )}
+
+      {reverseMorph && (
+        <ReverseMorphOverlay
+          sourceRect={reverseMorph.sourceRect}
+          targetCentre={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }}
+          onComplete={() => setReverseMorph(null)}
         />
       )}
     </div>
