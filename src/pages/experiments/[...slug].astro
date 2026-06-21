@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { buildPlayerUrl } from '../../lib/player';
 import { getExperimentNav } from '../../lib/navigation';
+import { computeCarouselWindow } from '../../lib/carousel-window';
 import { generateThemeScript } from '../../lib/theme-script';
 
 export async function getStaticPaths() {
@@ -21,6 +22,17 @@ const dateRest = `${String(date.getUTCMonth() + 1).padStart(2, '0')}${date.getUT
 const navEntries = allExperiments.map((e: any) => ({ id: e.id, date: e.data.date }));
 const { prev, next } = getExperimentNav(navEntries, entry.id);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Carousel dot indicator: derive this page's index in the same chronological
+// order getExperimentNav uses (date ascending), then drive the window engine.
+const sortedExperiments = [...navEntries].sort(
+  (a, b) => a.date.getTime() - b.date.getTime(),
+);
+const currentIndex = sortedExperiments.findIndex((e) => e.id === entry.id);
+const carousel = computeCarouselWindow({
+  currentIndex,
+  totalCount: sortedExperiments.length,
+});
 const themeScript = generateThemeScript();
 ---
 <html lang="en">
@@ -103,6 +115,30 @@ const themeScript = generateThemeScript();
         color: var(--mq-text); background: var(--mq-panel-hover);
       }
       .toggle { margin-left: auto; }
+
+      /* carousel dot indicator */
+      .carousel {
+        display: flex; align-items: center; gap: 6px;
+        padding: 0 8px; height: 18px;
+      }
+      .cdot {
+        /* base dot is a 6px circle; --scale (0.5..1) sizes it down toward edges */
+        width: 6px; height: 6px;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: var(--mq-text);
+        /* opacity follows the same depth curve as size */
+        opacity: calc(0.25 + 0.55 * var(--scale, 1));
+        transform: scale(var(--scale, 1));
+        transition: width 0.25s ease, height 0.25s ease,
+          transform 0.25s ease, opacity 0.25s ease, background 0.2s ease;
+      }
+      .cdot--active {
+        /* active dot is an elongated horizontal pill, not just larger */
+        width: 16px;
+        opacity: 1;
+        transform: scale(1);
+      }
 
       /* title card */
       .panel {
@@ -191,6 +227,18 @@ const themeScript = generateThemeScript();
         <nav class="topnav">
           <a class="navlink" href={`${import.meta.env.BASE_URL}`}>Gallery</a>
           {prev && <a class="navlink" href={`${base}/experiments/${prev}`}>&larr; Prev</a>}
+          {carousel.visibleIndices.length > 0 && (
+            <span class="carousel" aria-label={`Experiment ${currentIndex + 1} of ${sortedExperiments.length}`}>
+              {carousel.visibleIndices.map((collectionIndex, slot) => (
+                <span
+                  class:list={['cdot', { 'cdot--active': slot === carousel.activeIndex }]}
+                  style={`--scale: ${carousel.scales[slot]};`}
+                  aria-hidden="true"
+                  data-index={collectionIndex}
+                ></span>
+              ))}
+            </span>
+          )}
           {next && <a class="navlink" href={`${base}/experiments/${next}`}>Next &rarr;</a>}
         </nav>
         <button class="toggle" id="theme-toggle" aria-label="Toggle theme">Dark</button>
