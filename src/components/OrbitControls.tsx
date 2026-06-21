@@ -7,6 +7,8 @@ interface OrbitControlsProps {
   minDistance?: number;
   maxDistance?: number;
   initialTarget?: { x: number; y: number; z: number };
+  /** Reports the per-frame azimuthal rotation delta (radians) of the camera. */
+  onOrbitDelta?: (deltaRadians: number) => void;
 }
 
 export function OrbitControls({
@@ -14,9 +16,11 @@ export function OrbitControls({
   minDistance = 0,
   maxDistance = Infinity,
   initialTarget,
+  onOrbitDelta,
 }: OrbitControlsProps) {
   const { camera, gl } = useThree();
   const controlsRef = useRef<ThreeOrbitControls | null>(null);
+  const prevAzimuthRef = useRef<number | null>(null);
 
   useEffect(() => {
     const controls = new ThreeOrbitControls(camera, gl.domElement);
@@ -27,10 +31,21 @@ export function OrbitControls({
       controls.target.set(initialTarget.x, initialTarget.y, initialTarget.z);
     }
     controlsRef.current = controls;
+    prevAzimuthRef.current = controls.getAzimuthalAngle();
     return () => controls.dispose();
   }, [camera, gl, enablePan, minDistance, maxDistance, initialTarget]);
 
-  useFrame(() => controlsRef.current?.update());
+  useFrame(() => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+    controls.update();
+    if (onOrbitDelta) {
+      const azimuth = controls.getAzimuthalAngle();
+      const prev = prevAzimuthRef.current;
+      if (prev !== null) onOrbitDelta(azimuth - prev);
+      prevAzimuthRef.current = azimuth;
+    }
+  });
 
   return null;
 }

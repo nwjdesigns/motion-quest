@@ -14,6 +14,8 @@ import { TopBar } from './TopBar';
 import { FooterBar } from './FooterBar';
 import { ThemeProvider, useTheme } from './ThemeContext';
 import { useLayoutShortcuts } from '../hooks/useLayoutShortcuts';
+import { useMarkBehaviour } from '../hooks/useMarkBehaviour';
+import { HOMEPAGE_SCALE } from '../lib/mark-engine';
 import { resolveInitialTheme, type Theme } from '../lib/theme';
 import { deserializeCameraState } from '../lib/camera-state';
 import { interpolateRect, type ScreenRect } from '../lib/morph';
@@ -112,7 +114,16 @@ function ThemedScene({
   const [layout, setLayout] = useState<LayoutMode>(initialLayout);
   const { theme, colors, toggleTheme } = useTheme();
   const [morphState, setMorphState] = useState<{ slug: string; rect: ScreenRect } | null>(null);
+  const [markHover, setMarkHover] = useState(false);
   useLayoutShortcuts(setLayout);
+
+  // Mark behaviour engine: the homepage mark is always at homepage scale; a
+  // navigation morph fires a forward burst; orbiting drives its spin speed.
+  const mark = useMarkBehaviour({
+    targetScale: HOMEPAGE_SCALE,
+    loading: morphState !== null,
+    hover: markHover,
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -136,8 +147,9 @@ function ThemedScene({
   }, [inputs, layout]);
 
   const handleNavigate = useCallback((slug: string, rect: ScreenRect) => {
+    mark.triggerNav('forward');
     setMorphState({ slug, rect });
-  }, []);
+  }, [mark]);
 
   const cameraPosition: [number, number, number] = initialCameraState?.position ?? [0, 0, 12];
 
@@ -172,10 +184,17 @@ function ThemedScene({
           minDistance={3}
           maxDistance={30}
           initialTarget={initialCameraState?.target}
+          onOrbitDelta={mark.setOrbitVelocity}
         />
       </Canvas>
 
-      <TopBar theme={theme} onThemeToggle={toggleTheme} />
+      <TopBar
+        theme={theme}
+        onThemeToggle={toggleTheme}
+        markRotation={mark.rotationAngle}
+        markScale={mark.scale}
+        onMarkHoverChange={setMarkHover}
+      />
       <FooterBar links={footerLinks} />
 
       {morphState && (

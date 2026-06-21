@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react';
 import type { Theme } from '../lib/theme';
+import { HOMEPAGE_SCALE } from '../lib/mark-engine';
 
 interface NavProps {
   baseUrl: string;
@@ -10,10 +12,48 @@ interface TopBarProps {
   theme: Theme;
   onThemeToggle: () => void;
   nav?: NavProps;
+  /** Mark behaviour engine output: cumulative rotation in degrees. */
+  markRotation?: number;
+  /** Mark behaviour engine output: rendered size in px. */
+  markScale?: number;
+  /** Called when the pointer enters / leaves the mark's proximity radius. */
+  onMarkHoverChange?: (hovering: boolean) => void;
 }
 
-export function TopBar({ theme, onThemeToggle, nav }: TopBarProps) {
+/** Pointer proximity radius (px) around the mark centre that counts as hover. */
+const MARK_HOVER_RADIUS = 64;
+
+export function TopBar({
+  theme,
+  onThemeToggle,
+  nav,
+  markRotation = 0,
+  markScale = HOMEPAGE_SCALE,
+  onMarkHoverChange,
+}: TopBarProps) {
   const isDark = theme === 'dark';
+  const markRef = useRef<SVGSVGElement>(null);
+
+  // Hover via pointer proximity to the mark element (not just hard hover).
+  useEffect(() => {
+    if (!onMarkHoverChange) return;
+    let hovering = false;
+    const onMove = (e: PointerEvent) => {
+      const el = markRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+      const near = dist <= MARK_HOVER_RADIUS;
+      if (near !== hovering) {
+        hovering = near;
+        onMarkHoverChange(near);
+      }
+    };
+    window.addEventListener('pointermove', onMove);
+    return () => window.removeEventListener('pointermove', onMove);
+  }, [onMarkHoverChange]);
 
   return (
     <header style={{
@@ -29,13 +69,19 @@ export function TopBar({ theme, onThemeToggle, nav }: TopBarProps) {
       fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
     }}>
       <svg
+        ref={markRef}
         aria-label="Motion Quest"
-        width="32"
-        height="32"
+        width={markScale}
+        height={markScale}
         viewBox="0 0 666 666"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ flexShrink: 0 }}
+        style={{
+          flexShrink: 0,
+          transform: `rotate(${markRotation}deg)`,
+          transformOrigin: 'center',
+          willChange: 'transform',
+        }}
       >
         <path d="M465.975 154.367C576.446 154.367 666 188.41 666 230.404C666 272.398 576.446 306.441 465.975 306.441C434.373 306.441 404.483 303.655 377.911 298.694C481.361 295.772 562.905 262.941 562.905 222.869C562.905 192.887 517.259 166.959 450.944 154.578C455.906 154.438 460.919 154.367 465.975 154.367Z" fill="currentColor"/>
         <path d="M200.025 511.633C89.5543 511.633 0 477.59 0 435.596C0 393.602 89.5543 359.559 200.025 359.559C231.627 359.559 261.517 362.345 288.089 367.306C184.639 370.228 103.095 403.059 103.095 443.131C103.095 473.112 148.741 499.041 215.056 511.422C210.094 511.562 205.081 511.633 200.025 511.633Z" fill="currentColor"/>
