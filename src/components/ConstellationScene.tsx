@@ -1,4 +1,5 @@
 import { Suspense, useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import type { CSSProperties } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from './OrbitControls';
 import { AmbientParticles } from './AmbientParticles';
@@ -16,6 +17,7 @@ import { ThemeProvider, useTheme } from './ThemeContext';
 import { useLayoutShortcuts } from '../hooks/useLayoutShortcuts';
 import { useMarkBehaviour } from '../hooks/useMarkBehaviour';
 import { HOMEPAGE_SCALE } from '../lib/mark-engine';
+import { useEntranceChoreography } from '../hooks/useEntranceChoreography';
 import { resolveInitialTheme, type Theme } from '../lib/theme';
 import { deserializeCameraState } from '../lib/camera-state';
 import { interpolateRect, type ScreenRect } from '../lib/morph';
@@ -117,13 +119,26 @@ function ThemedScene({
   const [markHover, setMarkHover] = useState(false);
   useLayoutShortcuts(setLayout);
 
-  // Mark behaviour engine: the homepage mark is always at homepage scale; a
-  // navigation morph fires a forward burst; orbiting drives its spin speed.
+  // Mark behaviour engine
   const mark = useMarkBehaviour({
     targetScale: HOMEPAGE_SCALE,
     loading: morphState !== null,
     hover: markHover,
   });
+
+  // Choreographed entrance on initial load
+  const entrance = useEntranceChoreography(experiments.length);
+  const sceneId =
+    experiments.length > 0 ? `node-${experiments.length - 1}` : 'particles';
+  const enterStyle = (id: string): CSSProperties => {
+    const p = entrance.progressFor(id);
+    return {
+      opacity: p,
+      transform: `translateY(${(1 - p) * 8}px)`,
+      transition: 'none',
+      willChange: 'opacity, transform',
+    };
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -155,6 +170,7 @@ function ThemedScene({
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: colors.background, position: 'relative' }}>
+      <div style={{ width: '100%', height: '100%', opacity: entrance.progressFor(sceneId), willChange: 'opacity' }}>
       <Canvas
         camera={{ position: cameraPosition, fov: 60 }}
         style={{ width: '100%', height: '100%', touchAction: 'none' }}
@@ -187,15 +203,20 @@ function ThemedScene({
           onOrbitDelta={mark.setOrbitVelocity}
         />
       </Canvas>
+      </div>
 
-      <TopBar
-        theme={theme}
-        onThemeToggle={toggleTheme}
-        markRotation={mark.rotationAngle}
-        markScale={mark.scale}
-        onMarkHoverChange={setMarkHover}
-      />
-      <FooterBar links={footerLinks} />
+      <div style={enterStyle('topbar')}>
+        <TopBar
+          theme={theme}
+          onThemeToggle={toggleTheme}
+          markRotation={mark.rotationAngle}
+          markScale={mark.scale}
+          onMarkHoverChange={setMarkHover}
+        />
+      </div>
+      <div style={enterStyle('footer')}>
+        <FooterBar links={footerLinks} />
+      </div>
 
       {morphState && (
         <MorphOverlay
