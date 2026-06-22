@@ -4,7 +4,7 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 
 - **Live:** https://nwjdesigns.github.io/motion-quest/
 - **Stack:** Astro 6 + React + R3F (three.js directly, no drei), content collection (Zod), GitHub Pages deploy, Cavalry WASM player (coi-serviceworker for COOP/COEP)
-- **Tests:** 220 Vitest across 23 files
+- **Tests:** 356 Vitest across 31 files
 - **Renders are portrait-majority** (9:16, for Instagram Reels) — design portrait-first
 - **Spec:** `prd-cavalry-lab.md` · **Next session:** `NEXT-SESSION-PROMPT.md`
 
@@ -28,16 +28,11 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 | 2026-06-17 | **Detail-page type-treatment redesign** (from Noah's mockup). Full-width **top bar** (`MQ™` serif wordmark · centred `Gallery`/`← Prev`/`Next →` · theme toggle) + **footer bar** (©2026 Noah Webster-James · Creative Tech). Card rebuilt: 28px title (dropped "Pilot:"), **outlined mono-caps** tool tags wrapping 3+2, `DDMMYYYY` date with bold day, "Made in Cavalry" (no version). **Description removed from the page** (schema field kept). Left content zone bound to the player via `--player-w`/`--content-right` CSS vars. `01.md`: British "Colour Array", tags reordered, version 2.7.2. 203 tests. NOT pixel-perfect yet — Noah parked a pixel-push pass |
 | 2026-06-19 | **16:9 detail-page layout fix.** `--content-right` capped at `60vw` so topbar/footbar always get at least 40% viewport width. Previously, a 16:9 scene in a 16:9 viewport crushed them to ~0px. Verified across desktop/tablet/mobile and both themes. Portrait layout unaffected |
 | 2026-06-21 | **Homepage identity pass: PRD + issue #15 shipped.** Full identity PRD written (issue [#14](https://github.com/nwjdesigns/motion-quest/issues/14)), sliced into 7 issues ([#15](https://github.com/nwjdesigns/motion-quest/issues/15)-[#21](https://github.com/nwjdesigns/motion-quest/issues/21)). #15 "Chrome, typography + keyboard shortcuts" built via TDD: new `TopBar` (64px, SVG pinwheel mark + theme toggle), `FooterBar` (56px, copyright + Instagram), `useLayoutShortcuts` hook (1/2/3 keys replace UIPanel layout toggle). UIPanel killed. `--mq-accent` removed (fully monochrome). Helvetica Neue set as primary typeface. Detail page: `MQ™` text replaced with SVG mark (24px), footer updated. 220 tests across 23 files |
+| 2026-06-22 | **Homepage identity pass #16-#21 shipped (multi-agent build).** All 6 remaining identity issues built via parallel worktree agents and manually integrated. #16 mark behaviour engine (idle/hover/orbit/nav/loading state machine + React hook, 38 tests). #17 carousel dot indicator (7-dot sliding window with cosine-ease scale, 17 tests). #18 entrance choreography (staggered topbar->footer->nodes->particles, skips on return visit, 22 tests). #19 forward morph (WAAPI thumbnail morph replacing old CSS MorphOverlay, transition orchestrator, chrome exit/enter, 36 tests). #20 reverse morph (predictTargetRect + sessionStorage handoff + shrink overlay, 23 tests). #21 monochrome polish (timing harmonization to cubic-bezier(0.4,0,0.2,1), underline draw-on hover, responsive 600px tuning). 356 tests across 31 files |
 
 ## Next up
 
-1. **Homepage identity pass #16-#21 (ACTIVE).** The remaining 6 issues from the identity PRD. Noah said "next sesh is a multi-agent build" so these can run in parallel:
-   - [#16](https://github.com/nwjdesigns/motion-quest/issues/16) Dynamic mark behaviour engine (state machine: idle/hover/orbit/nav/loading)
-   - [#17](https://github.com/nwjdesigns/motion-quest/issues/17) Carousel dot indicator (7-dot sliding window, active elongated, edge dots scale)
-   - [#18](https://github.com/nwjdesigns/motion-quest/issues/18) Entrance choreography (staggered load sequence)
-   - [#19](https://github.com/nwjdesigns/motion-quest/issues/19) Page transition: thumbnail morph to player (forward + reverse, Astro View Transitions, snapshot approach for 3D->DOM)
-   - [#20](https://github.com/nwjdesigns/motion-quest/issues/20) Hover/interaction microinteractions (button hover effects, no iridescent)
-   - [#21](https://github.com/nwjdesigns/motion-quest/issues/21) Polish + responsive audit
+1. **Push + close GitHub issues.** Main is 5 commits ahead of origin. Push, then close #16-#21 on GitHub. Visually verify deployed site.
 2. **Detail-page pixel-push (PARKED).** Noah: "still quite a bit to pixel push but for now good enough." Only revisit when he raises it with a mockup/screenshot.
 3. **Real content.** `exp-01`..`exp-30` still placeholders (thumbnail + `.md`, no `.cv`); `particle-grid` + `01` are real. Noah provides the `.cv` path, Claude handles copy + markdown + commit. Open: do real scenes REPLACE the exp-01..30 slugs or land as new named experiments?
 4. **Detail-page mobile.** The redesigned floating panels do not collapse on touch like the homepage UIPanel did (no hamburger toggle). Add a touch-collapse + real-device gesture check.
@@ -46,7 +41,6 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 
 - **Claude 101 for Designers** — education site + sellable React component library for Framer. Full brief: `notes/claude-101-for-designers.md`. Parked 2026-06-20, not yet prioritised. Build approach: Figma-first design system (tokens > components > sections), then Next.js + React + Tailwind, theme-driven. Doubles as a test case for Figma MCP / design skills pipeline.
 - Times New Roman held in reserve for accent typography (headlines, pull quotes). Not used yet. Evaluate after identity pass ships.
-- Consider a `vitest exclude` for `.claude/worktrees/` so test counts can't get inflated again.
 - Detail-page layout: Direction B (framed 16:9 player on a themed stage) was mocked up and set aside in favour of A; revisit if the full-bleed letterboxing becomes a problem.
 
 ## Known rough edges
