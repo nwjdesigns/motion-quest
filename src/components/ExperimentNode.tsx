@@ -1,13 +1,11 @@
 import { useRef, useState, useMemo } from 'react';
 import { useLoader, useFrame, useThree } from '@react-three/fiber';
-import { TextureLoader, Vector3, Matrix4 } from 'three';
+import { TextureLoader, Vector3 } from 'three';
 import type { Mesh } from 'three';
 import type { ThreeEvent } from '@react-three/fiber';
 import type { Position3D } from '../lib/constellation';
 import { PixelationMaterial } from './PixelationMaterial';
 import { serializeCameraState } from '../lib/camera-state';
-import { projectRect } from '../lib/projection';
-import type { ScreenRect } from '../lib/morph';
 
 interface ExperimentNodeProps {
   position: Position3D;
@@ -15,7 +13,6 @@ interface ExperimentNodeProps {
   title: string;
   slug: string;
   baseUrl: string;
-  onNavigate?: (slug: string, screenRect: ScreenRect | null, thumbnailUrl: string) => void;
 }
 
 const springStiffness = 8;
@@ -30,12 +27,11 @@ export function ExperimentNode({
   title,
   slug,
   baseUrl,
-  onNavigate,
 }: ExperimentNodeProps) {
   const meshRef = useRef<Mesh>(null);
   const velocityRef = useRef(new Vector3());
   const [hovered, setHovered] = useState(false);
-  const { camera, size } = useThree();
+  const { camera } = useThree();
 
   const base = baseUrl.replace(/\/$/, '');
   const thumbnailUrl = `${base}/cavalry/${thumbnail}`;
@@ -91,26 +87,6 @@ export function ExperimentNode({
         zoom: camera.zoom,
       }),
     );
-
-    if (onNavigate && meshRef.current) {
-      const vpMatrix = new Matrix4()
-        .multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-      const m = vpMatrix.elements;
-      const worldPos = meshRef.current.position;
-
-      // Size the morph start-rect from the plane's true projected corners so it
-      // matches the thumbnail's on-screen size at any zoom (not a fixed 160x90).
-      const rect: ScreenRect = projectRect(
-        { x: worldPos.x, y: worldPos.y, z: worldPos.z },
-        { x: planeWidth / 2, y: planeHeight / 2 },
-        Array.from(m),
-        size.width,
-        size.height,
-      );
-
-      onNavigate(slug, rect, thumbnailUrl);
-      return;
-    }
 
     window.location.href = `${base}/experiments/${slug}`;
   };

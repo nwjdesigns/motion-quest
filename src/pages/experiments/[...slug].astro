@@ -352,38 +352,6 @@ const themeScript = generateThemeScript();
         postTheme();
       });
 
-      // --- Reverse morph: Gallery link + browser back ---
-      function capturePlayerRect(): { x: number; y: number; width: number; height: number } | null {
-        const stageInner = document.querySelector('.stage-inner');
-        if (!stageInner) return null;
-        const r = stageInner.getBoundingClientRect();
-        return { x: r.x, y: r.y, width: r.width, height: r.height };
-      }
-
-      function storeReverseMorph(rect: { x: number; y: number; width: number; height: number }) {
-        sessionStorage.setItem('mq-reverse-morph', JSON.stringify({
-          sourceRect: rect,
-          slug: window.location.pathname.split('/').filter(Boolean).pop() || '',
-          timestamp: Date.now(),
-        }));
-      }
-
-      const galleryLink = document.querySelector('[data-gallery-link]') as HTMLAnchorElement | null;
-      galleryLink?.addEventListener('click', (e) => {
-        const rect = capturePlayerRect();
-        if (rect) {
-          e.preventDefault();
-          storeReverseMorph(rect);
-          window.location.href = galleryLink.href;
-        }
-      });
-
-      window.addEventListener('popstate', () => {
-        const rect = capturePlayerRect();
-        if (rect) {
-          storeReverseMorph(rect);
-        }
-      });
     </script>
   </body>
 </html>
