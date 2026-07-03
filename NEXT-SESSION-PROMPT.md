@@ -4,28 +4,30 @@
 
 Site live at https://nwjdesigns.github.io/motion-quest/. Repo public. **356 Vitest tests across 31 files.** Astro 6, React, R3F, GitHub Pages, Cavalry WASM player. Full status in `ROADMAP.md`. PRDs: `prd-cavalry-lab.md`, `prd-homepage-identity.md`.
 
-`origin/main` is synced (the morph-removal commits are all pushed — `babd4e3` is on origin). The identity pass is shipped.
+Last session (2026-07-03) shipped homepage marquee drift, billboard nodes, live connecting lines, and particle polish. Issues #16-#21 already closed. Working tree has uncommitted changes across 4 component files plus ROADMAP.md and this file. Push needed.
 
 ## Immediate TODO
 
-1. **Decide fate of the uncommitted constellation "marquee" experiment.** The working tree has an unpushed, **broken** experiment across 4 files:
-   - `AmbientParticles.tsx` — denser, slower drift (200 → 1000 particles, wider spread/amplitude).
-   - `ConnectingLines.tsx` — reads live node positions via `livePositionsRef` instead of static layout.
-   - `ConstellationScene.tsx` — adds a `MarqueeClock` + shared `marqueeOffsetRef` + `livePositionsRef`.
-   - `ExperimentNode.tsx` — horizontal-wrap marquee drift (`wrapX`), camera-facing billboard (`quaternion.copy(camera.quaternion)`), writes live position back.
-   - **Bug blocking it:** `ConstellationScene.tsx:155` passes `marqueeSpeedFactor={speedFactors[i]}` but `speedFactors` is never defined — the new `useMemo` builds `marqueeParams` and nothing consumes it. Throws at runtime. Either wire `marqueeParams` → the speed factor (and use its `phase`), or discard the whole experiment. Confirm with Noah whether this is a direction he wants before finishing.
+1. **Commit and push.** The marquee + particle changes are complete and tested (356 pass). Commit, push, verify deploy.
+2. **Visually verify deployed site.** After push triggers GitHub Pages deploy, check homepage: nodes drift independently left-to-right, connecting lines follow live positions, particles visible and small, TopBar/FooterBar fixed at top/bottom. Check detail page still works.
+3. **New untracked file `after-effects/text_you_later_main.aep`.** Decide whether the binary AE project belongs in the repo or should be gitignored.
 
-2. **New untracked file `after-effects/text_you_later_main.aep`.** Decide whether the binary AE project belongs in the repo or should be gitignored.
-
-3. **Close GitHub issues #16-#21.** All built and committed. Use `gh issue close` if satisfied.
-
-## What's next after that
+## What's next after verification
 
 See `ROADMAP.md` "Next up" for the full list. Top candidates:
 - **Real content.** Replace placeholder experiments with real Cavalry scenes as Noah publishes them.
-- **Detail-page pixel-push.** Noah parked this — only revisit when he raises it with a mockup.
+- **Detail-page pixel-push.** Noah parked this; only revisit when he raises it with a mockup.
 - **Detail-page mobile.** Touch-collapse panels, real-device gesture check.
 - **Times New Roman.** Held in reserve for accent typography. Noah will say when.
+
+## Architecture notes for marquee system
+
+- `MarqueeClock` in ConstellationScene: drives a shared `marqueeOffsetRef` (increments by `MARQUEE_SPEED * delta` each frame)
+- Each `ExperimentNode` receives: `marqueeOffsetRef`, `marqueeSpeedFactor` (0.5-1.5x), `marqueePhase` (initial x offset for distribution), `livePositionsRef` (shared Float32Array)
+- Node x position: `wrapX(position.x + marqueePhase + offset * speedFactor)` where wrapX modular-wraps between MARQUEE_MIN (-9) and MARQUEE_MAX (9)
+- Each node writes its live xyz to `livePositionsRef` at `index * 3`; ConnectingLines reads from this ref instead of static layout positions
+- Billboard: `meshRef.current.quaternion.copy(camera.quaternion)` in useFrame
+- Spring physics still applies to y and z axes (for layout transitions); x is set directly by marquee
 
 ## Dead code note
 

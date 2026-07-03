@@ -18,9 +18,10 @@ const MAX_SEGMENTS = 500;
 interface ConnectingLinesProps {
   positions: Point3D[];
   theme: Theme;
+  livePositionsRef?: React.RefObject<Float32Array>;
 }
 
-export function ConnectingLines({ positions, theme }: ConnectingLinesProps) {
+export function ConnectingLines({ positions, theme, livePositionsRef }: ConnectingLinesProps) {
   const lineBase = theme === 'dark' ? 0.5 : 0.3;
   const linesRef = useRef<LineSegments>(null);
   const mouseRef = useRef(new Vector2());
@@ -58,6 +59,15 @@ export function ConnectingLines({ positions, theme }: ConnectingLinesProps) {
     return () => window.removeEventListener('mousemove', onMove);
   }, []);
 
+  const getLivePos = (index: number): Point3D => {
+    const live = livePositionsRef?.current;
+    if (live) {
+      const off = index * 3;
+      return { x: live[off], y: live[off + 1], z: live[off + 2] };
+    }
+    return positions[index];
+  };
+
   useFrame(() => {
     if (!linesRef.current) return;
 
@@ -66,8 +76,10 @@ export function ConnectingLines({ positions, theme }: ConnectingLinesProps) {
     const cursorOrigin = raycaster.ray.origin;
     worldCursor.copy(cursorDir).multiplyScalar(12).add(cursorOrigin);
 
+    const livePos = positions.map((_, idx) => getLivePos(idx));
+
     const graph = computeProximityGraph(
-      positions,
+      livePos,
       { x: worldCursor.x, y: worldCursor.y, z: worldCursor.z },
       ACTIVATION_RADIUS,
     );
@@ -80,7 +92,7 @@ export function ConnectingLines({ positions, theme }: ConnectingLinesProps) {
 
     for (const conn of graph.cursorToThumbnail) {
       if (segIdx >= MAX_SEGMENTS) break;
-      const t = positions[conn.index];
+      const t = livePos[conn.index];
       const i = segIdx * 6;
       posArr[i] = worldCursor.x;
       posArr[i + 1] = worldCursor.y;
@@ -100,8 +112,8 @@ export function ConnectingLines({ positions, theme }: ConnectingLinesProps) {
 
     for (const conn of graph.thumbnailToThumbnail) {
       if (segIdx >= MAX_SEGMENTS) break;
-      const a = positions[conn.indexA];
-      const b = positions[conn.indexB];
+      const a = livePos[conn.indexA];
+      const b = livePos[conn.indexB];
       const i = segIdx * 6;
       posArr[i] = a.x;
       posArr[i + 1] = a.y;

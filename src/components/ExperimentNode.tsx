@@ -7,12 +7,25 @@ import type { Position3D } from '../lib/constellation';
 import { PixelationMaterial } from './PixelationMaterial';
 import { serializeCameraState } from '../lib/camera-state';
 
+export const MARQUEE_MIN = -9;
+export const MARQUEE_MAX = 9;
+const MARQUEE_RANGE = MARQUEE_MAX - MARQUEE_MIN;
+
+function wrapX(x: number): number {
+  return ((x - MARQUEE_MIN) % MARQUEE_RANGE + MARQUEE_RANGE) % MARQUEE_RANGE + MARQUEE_MIN;
+}
+
 interface ExperimentNodeProps {
   position: Position3D;
   thumbnail: string;
   title: string;
   slug: string;
   baseUrl: string;
+  marqueeOffsetRef?: React.RefObject<number>;
+  marqueeSpeedFactor?: number;
+  marqueePhase?: number;
+  index?: number;
+  livePositionsRef?: React.RefObject<Float32Array>;
 }
 
 const springStiffness = 8;
@@ -27,6 +40,11 @@ export function ExperimentNode({
   title,
   slug,
   baseUrl,
+  marqueeOffsetRef,
+  marqueeSpeedFactor = 1,
+  marqueePhase = 0,
+  index = 0,
+  livePositionsRef,
 }: ExperimentNodeProps) {
   const meshRef = useRef<Mesh>(null);
   const velocityRef = useRef(new Vector3());
@@ -51,29 +69,39 @@ export function ExperimentNode({
     return mat;
   }, [texture]);
 
-  useFrame((_, delta) => {
+  useFrame(({ camera }, delta) => {
     if (!meshRef.current) return;
     const dt = Math.min(delta, 0.05);
 
     const current = meshRef.current.position;
-    const target = position;
     const vel = velocityRef.current;
 
-    const dx = target.x - current.x;
-    const dy = target.y - current.y;
-    const dz = target.z - current.z;
+    if (marqueeOffsetRef) {
+      current.x = wrapX(position.x + marqueePhase + marqueeOffsetRef.current * marqueeSpeedFactor);
+    } else {
+      const dx = position.x - current.x;
+      vel.x += dx * springStiffness * dt;
+      vel.x *= Math.exp(-springDamping * dt);
+      current.x += vel.x * dt;
+    }
 
-    vel.x += dx * springStiffness * dt;
+    const dy = position.y - current.y;
+    const dz = position.z - current.z;
     vel.y += dy * springStiffness * dt;
     vel.z += dz * springStiffness * dt;
-
-    vel.x *= Math.exp(-springDamping * dt);
     vel.y *= Math.exp(-springDamping * dt);
     vel.z *= Math.exp(-springDamping * dt);
-
-    current.x += vel.x * dt;
     current.y += vel.y * dt;
     current.z += vel.z * dt;
+
+    meshRef.current.quaternion.copy(camera.quaternion);
+
+    if (livePositionsRef?.current) {
+      const off = index * 3;
+      livePositionsRef.current[off] = current.x;
+      livePositionsRef.current[off + 1] = current.y;
+      livePositionsRef.current[off + 2] = current.z;
+    }
   });
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {

@@ -1,6 +1,6 @@
-import { Suspense, useState, useMemo, useEffect } from 'react';
+import { Suspense, useState, useMemo, useEffect, useRef } from 'react';
 import type { CSSProperties } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from './OrbitControls';
 import { AmbientParticles } from './AmbientParticles';
 import { ConnectingLines } from './ConnectingLines';
@@ -46,6 +46,18 @@ function SceneBackground() {
   return <color attach="background" args={[colors.background]} />;
 }
 
+const MARQUEE_SPEED = 0.4;
+const MARQUEE_MIN = -9;
+const MARQUEE_MAX = 9;
+const MARQUEE_RANGE = MARQUEE_MAX - MARQUEE_MIN;
+
+function MarqueeClock({ offsetRef }: { offsetRef: React.MutableRefObject<number> }) {
+  useFrame((_, delta) => {
+    offsetRef.current += MARQUEE_SPEED * Math.min(delta, 0.05);
+  });
+  return null;
+}
+
 function ThemedScene({
   experiments,
   baseUrl,
@@ -77,6 +89,7 @@ function ThemedScene({
     experiments.length > 0 ? `node-${experiments.length - 1}` : 'particles';
   const enterStyle = (id: string): CSSProperties => {
     const p = entrance.progressFor(id);
+    if (p >= 1) return {};
     return {
       opacity: p,
       transform: `translateY(${(1 - p) * 8}px)`,
@@ -107,6 +120,16 @@ function ThemedScene({
   }, [inputs, layout]);
 
   const cameraPosition: [number, number, number] = initialCameraState?.position ?? [0, 0, 12];
+  const marqueeOffsetRef = useRef(0);
+  const livePositionsRef = useRef(new Float32Array(experiments.length * 3));
+
+  const marqueeParams = useMemo(() =>
+    experiments.map((_, i) => ({
+      speed: 0.5 + ((i * 7 + 3) % 11) / 11 * 1.0,
+      phase: ((i * 13 + 5) % 18) / 18 * 18,
+    })),
+    [experiments.length],
+  );
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: colors.background, position: 'relative' }}>
@@ -117,6 +140,7 @@ function ThemedScene({
       >
         <SceneBackground />
         <ambientLight intensity={1} />
+        <MarqueeClock offsetRef={marqueeOffsetRef} />
 
         <Suspense fallback={null}>
           {experiments.map((exp, i) => (
@@ -127,11 +151,16 @@ function ThemedScene({
               title={exp.title}
               slug={exp.id}
               baseUrl={baseUrl}
+              marqueeOffsetRef={marqueeOffsetRef}
+              marqueeSpeedFactor={marqueeParams[i].speed}
+              marqueePhase={marqueeParams[i].phase}
+              index={i}
+              livePositionsRef={livePositionsRef}
             />
           ))}
         </Suspense>
 
-        <ConnectingLines positions={positions} theme={theme} />
+        <ConnectingLines positions={positions} theme={theme} livePositionsRef={livePositionsRef} />
         <AmbientParticles theme={theme} />
 
         <OrbitControls

@@ -10,9 +10,9 @@ import {
 import { generateParticles } from '../lib/particles';
 import { getThemeColors, type Theme } from '../lib/theme';
 
-const PARTICLE_COUNT = 200;
-const DRIFT_SPEED = 0.15;
-const SPREAD = 10;
+const PARTICLE_COUNT = 2000;
+const DRIFT_SPEED = 0.08;
+const SPREAD = 18;
 
 const particleVertexShader = /* glsl */ `
 varying vec4 vClipPos;
@@ -58,8 +58,8 @@ export function AmbientParticles({ theme }: AmbientParticlesProps) {
 
   const particles = useMemo(() => generateParticles(PARTICLE_COUNT, {
     spread: SPREAD,
-    minScale: 0.02,
-    maxScale: 0.12,
+    minScale: 0.008,
+    maxScale: 0.04,
     seed: 31,
   }), []);
 
@@ -68,12 +68,12 @@ export function AmbientParticles({ theme }: AmbientParticlesProps) {
       phaseX: Math.random() * Math.PI * 2,
       phaseY: Math.random() * Math.PI * 2,
       phaseZ: Math.random() * Math.PI * 2,
-      ampX: 0.3 + Math.random() * 0.7,
-      ampY: 0.3 + Math.random() * 0.7,
-      ampZ: 0.2 + Math.random() * 0.5,
-      freqX: 0.3 + Math.random() * 0.4,
-      freqY: 0.2 + Math.random() * 0.3,
-      freqZ: 0.15 + Math.random() * 0.25,
+      ampX: 1.2 + Math.random() * 2.8,
+      ampY: 1.2 + Math.random() * 2.8,
+      ampZ: 0.5 + Math.random() * 1.5,
+      freqX: 0.15 + Math.random() * 0.25,
+      freqY: 0.12 + Math.random() * 0.2,
+      freqZ: 0.1 + Math.random() * 0.15,
     })),
   [particles]);
 
