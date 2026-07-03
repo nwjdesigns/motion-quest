@@ -33,10 +33,11 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 
 ## Next up
 
-1. **Push + close GitHub issues.** Main is 1 commit ahead of origin (morph removal). Push, then close #16-#21 on GitHub. Visually verify deployed site.
-2. **Detail-page pixel-push (PARKED).** Noah: "still quite a bit to pixel push but for now good enough." Only revisit when he raises it with a mockup/screenshot.
-3. **Real content.** `exp-01`..`exp-30` still placeholders (thumbnail + `.md`, no `.cv`); `particle-grid` + `01` are real. Noah provides the `.cv` path, Claude handles copy + markdown + commit. Open: do real scenes REPLACE the exp-01..30 slugs or land as new named experiments?
-4. **Detail-page mobile.** The redesigned floating panels do not collapse on touch like the homepage UIPanel did (no hamburger toggle). Add a touch-collapse + real-device gesture check.
+1. **Constellation "marquee" experiment (UNCOMMITTED, BROKEN).** Working tree has an unpushed experiment: horizontal-wrap node drift (`wrapX` marquee in `ExperimentNode`), camera-facing billboards, live-position-driven connecting lines, denser ambient particles (200→1000). Blocked by a bug — `ConstellationScene.tsx:155` uses `speedFactors[i]` which is never defined (`marqueeParams` is built but unused). Finish (wire it up) or discard. See `NEXT-SESSION-PROMPT.md`.
+2. **Close GitHub issues #16-#21.** All built, committed, and pushed (origin synced). Close on GitHub when satisfied.
+3. **Detail-page pixel-push (PARKED).** Noah: "still quite a bit to pixel push but for now good enough." Only revisit when he raises it with a mockup/screenshot.
+4. **Real content.** `exp-01`..`exp-30` still placeholders (thumbnail + `.md`, no `.cv`); `particle-grid` + `01` are real. Noah provides the `.cv` path, Claude handles copy + markdown + commit. Open: do real scenes REPLACE the exp-01..30 slugs or land as new named experiments?
+5. **Detail-page mobile.** The redesigned floating panels do not collapse on touch like the homepage UIPanel did (no hamburger toggle). Add a touch-collapse + real-device gesture check.
 
 ## Backlog / ideas
 
