@@ -20,6 +20,11 @@ See `ROADMAP.md` "Next up" for the full list. Top candidates:
 - **Detail-page mobile.** Touch-collapse panels, real-device gesture check.
 - **Times New Roman.** Held in reserve for accent typography. Noah will say when.
 
+## New this session (2026-07-04)
+
+- **Source text library** created at `references/source-texts/`. Public domain literary texts in original language for use as visual material. First entry: Dostoevsky's Grand Inquisitor (Russian). See `references/source-texts/README.md` for index.
+- Noah flagged the Inquisitor's argument as a personal reminder: stop chasing perfectionism and rounding corners, be a little rough.
+
 ## Architecture notes for marquee system
 
 - `MarqueeClock` in ConstellationScene: drives a shared `marqueeOffsetRef` (increments by `MARQUEE_SPEED * delta` each frame)
