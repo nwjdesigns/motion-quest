@@ -34,9 +34,10 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 
 ## Next up
 
-1. **Detail-page pixel-push (PARKED).** Noah: "still quite a bit to pixel push but for now good enough." Only revisit when he raises it with a mockup/screenshot.
+1. **Poster Machine — Layer 1 grid rig (ACTIVE, spec: `prd-poster-machine.md`).** First sellable rig, built grid-first in three publishable layers: L1 editable column grid (5 controls, one Cavalry session), L2 type snaps to grid, L3 animation styles + $19 Stripe launch. Tester for the NWJ Cavalry-products venture; the Merlin "Kay" business-partner agent build (merlin #41-#51) is parked pending 1 stranger sale within 4 weeks of L3 launch. Noah builds in Cavalry; Claude handles publish, copy, frontmatter, Stripe link. Directly feeds "Real content" below.
 2. **Real content.** `exp-01`..`exp-30` still placeholders (thumbnail + `.md`, no `.cv`); `particle-grid` + `01` are real. Noah provides the `.cv` path, Claude handles copy + markdown + commit. Open: do real scenes REPLACE the exp-01..30 slugs or land as new named experiments?
-3. **Detail-page mobile.** The redesigned floating panels do not collapse on touch like the homepage UIPanel did (no hamburger toggle). Add a touch-collapse + real-device gesture check.
+3. **Detail-page pixel-push (PARKED).** Noah: "still quite a bit to pixel push but for now good enough." Only revisit when he raises it with a mockup/screenshot.
+4. **Detail-page mobile.** The redesigned floating panels do not collapse on touch like the homepage UIPanel did (no hamburger toggle). Add a touch-collapse + real-device gesture check.
 
 ## Backlog / ideas
 
