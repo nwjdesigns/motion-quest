@@ -37,6 +37,10 @@ Last session (2026-07-14) built the full responsive typographic grid system in C
 - **L1+L2 grid rig + text** — BUILT (columns, rows, text snap to grid). Animation and controls pending.
 - **L3 animation styles** (Rise/Wave/Pulse riding the grid) + font packaging (Space Grotesk, OFL) + $19 Stripe link → the sellable Poster Machine + daily "one word, one poster" content series
 
+## Parked: Cavalry Measurement Tool
+
+Noah pitched a Figma-like measurement tool for Cavalry (2026-07-14). Research done: hybrid approach (script panel + JS Shape overlay). No competition. Pre-grill. See memory `project_cavalry_measure_tool.md` for full research. Pick up if Noah wants to grill it.
+
 ## Standing items (unchanged)
 
 - Real content: do real scenes replace `exp-01..30` slugs or land as new named experiments?

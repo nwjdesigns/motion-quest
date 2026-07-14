@@ -45,6 +45,7 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 - Times New Roman held in reserve for accent typography (headlines, pull quotes). Not used yet. Evaluate after identity pass ships.
 - Detail-page layout: Direction B (framed 16:9 player on a themed stage) was mocked up and set aside in favour of A; revisit if the full-bleed letterboxing becomes a problem.
 - **Cavalry Grid Rig Generator** — a Cavalry JavaScript Editor script that auto-generates a responsive grid setup (columns, rows, gutters, margins, all node wiring) in one click. Building Poster Machine's grid manually exposed how tedious the node-by-node approach is. The script would use Cavalry's `api` module to create shapes, Duplicators, JS Utilities, Math nodes, and wire them together programmatically.
+- **Cavalry Measurement Tool** — Figma-like distance measurement for Cavalry (select two layers, see pixel distances). Hybrid build: dockable script panel (`onSelectionChanged` + `api.getBoundingBox`) + JavaScript Shape overlay (dimension lines/labels via `cavalry.Path` + `cavalry.measureText`). No competition exists. Research done 2026-07-14, pre-grill. Free reputation builder or paid tool for the EES venture.
 
 ## Known rough edges
 
