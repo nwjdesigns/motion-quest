@@ -34,7 +34,7 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 
 ## Next up
 
-1. **Poster Machine — Layer 1 grid rig (ACTIVE, spec: `prd-poster-machine.md`).** First sellable rig, built grid-first in three publishable layers: L1 editable column grid (5 controls, one Cavalry session), L2 type snaps to grid, L3 animation styles + $19 Stripe launch. Tester for the NWJ Cavalry-products venture; the Merlin "Kay" business-partner agent build (merlin #41-#51) is parked pending 1 stranger sale within 4 weeks of L3 launch. Noah builds in Cavalry; Claude handles publish, copy, frontmatter, Stripe link. Directly feeds "Real content" below.
+1. **Poster Machine — Grid rig animation + controls (ACTIVE, spec: `prd-poster-machine.md`).** Grid system built in Cavalry (columns, rows, text distribution via String Array + Duplicator, responsive to Margin/Gutter/Columns/Rows). Next: stagger entrance animation (per-word and/or per-letter), expose controls to Control Centre (Columns, Rows, Margin, Gutter, Ink, Paper, Text, Span), Ink/Paper colour wiring, font (Space Grotesk OFL). Then L3 animation styles + $19 Stripe launch. Cavalry file: `~/Desktop/2026/EES/DAILY/PRODUCTION/07_JULY/CAV/july_main_build.cv` (comp "04 duplicates"). Tester for the NWJ Cavalry-products venture; Kay (merlin #41-#51) parked pending 1 stranger sale within 4 weeks of L3 launch.
 2. **Real content.** `exp-01`..`exp-30` still placeholders (thumbnail + `.md`, no `.cv`); `particle-grid` + `01` are real. Noah provides the `.cv` path, Claude handles copy + markdown + commit. Open: do real scenes REPLACE the exp-01..30 slugs or land as new named experiments?
 3. **Detail-page pixel-push (PARKED).** Noah: "still quite a bit to pixel push but for now good enough." Only revisit when he raises it with a mockup/screenshot.
 4. **Detail-page mobile.** The redesigned floating panels do not collapse on touch like the homepage UIPanel did (no hamburger toggle). Add a touch-collapse + real-device gesture check.
@@ -44,6 +44,7 @@ Source of truth for project status. GitHub issues #1-#13 are all still OPEN (thi
 - **Claude 101 for Designers** — education site + sellable React component library for Framer. Full brief: `notes/claude-101-for-designers.md`. Parked 2026-06-20, not yet prioritised. Build approach: Figma-first design system (tokens > components > sections), then Next.js + React + Tailwind, theme-driven. Doubles as a test case for Figma MCP / design skills pipeline.
 - Times New Roman held in reserve for accent typography (headlines, pull quotes). Not used yet. Evaluate after identity pass ships.
 - Detail-page layout: Direction B (framed 16:9 player on a themed stage) was mocked up and set aside in favour of A; revisit if the full-bleed letterboxing becomes a problem.
+- **Cavalry Grid Rig Generator** — a Cavalry JavaScript Editor script that auto-generates a responsive grid setup (columns, rows, gutters, margins, all node wiring) in one click. Building Poster Machine's grid manually exposed how tedious the node-by-node approach is. The script would use Cavalry's `api` module to create shapes, Duplicators, JS Utilities, Math nodes, and wire them together programmatically.
 
 ## Known rough edges
 

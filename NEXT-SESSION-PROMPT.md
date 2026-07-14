@@ -1,28 +1,48 @@
-# Next Session: Poster Machine — Layer 1 (grid rig)
+# Next Session: Poster Machine — Animation + Controls
 
 ## Context
 
 Site live at https://nwjdesigns.github.io/motion-quest/. Repo public. **356 Vitest tests across 31 files.** Astro 6, React, R3F, GitHub Pages, Cavalry WASM player. Full status in `ROADMAP.md`. PRDs: `prd-cavalry-lab.md`, `prd-homepage-identity.md`, **`prd-poster-machine.md` (ACTIVE)**.
 
-Last session (2026-07-08, planning) locked the venture direction: sell Cavalry rigs on this site, starting with **Poster Machine**, built grid-first in three publishable layers. Full spec in `prd-poster-machine.md` (v2). The bigger Merlin "Kay" business-partner agent (merlin #41-#51) is PARKED pending this tester: 1 genuine stranger purchase within 4 weeks of the Layer 3 launch, or we rethink the offer before touching infrastructure.
+Last session (2026-07-14) built the full responsive typographic grid system in Cavalry. Columns, rows, and text distributing across cells via String Array + Duplicator with per-duplicate positioning. All responsive to Margin, Gutter, Columns, Rows.
+
+**Cavalry file:** `~/Desktop/2026/EES/DAILY/PRODUCTION/07_JULY/CAV/july_main_build.cv`. Four comps: `01 columns` (column-only prototype), `02 rows and text` (manual Cell X/Y positioning), `03 autolayout` (Grid distribution experiment, abandoned), **`04 duplicates` (WORKING: String Array + Point distribution + Index Context + Shape Position)**.
+
+## Grid rig architecture (proven, do not re-derive)
+
+- **JS Utility [Size.W]**: column width = `(1080 - 2*margin - (columns-1)*gutter) / columns`
+- **JS Utility 2 [Size.H]**: row height = same formula with 1920 and row params
+- **Math / Math 2**: column width + gutter / row height + row gutter for Duplicator step distance
+- **Duplicator** (columns, Linear horizontal) + **Duplicator 2** (rows, Linear vertical)
+- **Duplicator 3** (text, Point distribution): String Array auto-indexes per duplicate, Index Context node wired to n5 on position JS Utilities, outputs to Duplicator's **Shape Position** (NOT input shape Position, which Duplicator strips)
+- **JS Utility 3 [Text Box Size.W]**: `span * columnWidth + (span-1) * gutter`
+- **JS Utility 4 [Position.X]**: `-(1080/2) + margin + (n5 % columns) * (columnWidth + gutter)`
+- **JS Utility 5 [Position.Y]**: `(1920/2) - margin - (Math.floor(n5 / columns)) * (rowHeight + rowGutter)`
 
 ## Immediate TODO
 
-1. **Layer 1 is Noah-in-Cavalry work**: the editable column grid (Columns, Margin, Gutter, Ink, Paper; Math node for column width, Duplicator linear distribution, Stagger entrance; recipe in the spec). One session, all known nodes. Claude's role while that happens: nothing until a `.cv` exists.
-2. **When the `.cv` lands**: publish it (`npm run publish -- <scene>.cv "Grid Study 01"`), write copy/frontmatter, handle linked assets (see rough edge below: linked images/fonts must be copied into `public/cavalry/scenes/` next to the `.cv`), verify the on-scene control panel renders all five controls, commit + push + check the live page.
-3. **Open decision (existing)**: does real content replace `exp-01..30` placeholder slugs or land as new named experiments? First real publish forces the answer.
-4. **Untracked file `after-effects/text_you_later_main.aep`** still awaiting Noah's call: keep in repo or gitignore.
-5. **Untracked `.claude/worktrees/`** in the working tree; should probably be gitignored, ask Noah.
+1. **Stagger entrance animation.** Two levels discussed: per-word (Duplicator Shape Time Offset + Stagger) and per-letter (Text Shape sub-mesh + Stagger behaviour). Noah wants to explore both. Start with per-word stagger on the text Duplicator.
+2. **Expose controls to Control Centre.** Right-click each attribute > Add to Control Centre:
+   - Columns (int, 1-8), Rows (int, 1-8), Margin (double, 0-200), Gutter (double, 0-100)
+   - Ink (colour, Rectangle Shape fill + Text fill), Paper (colour, comp background)
+   - Text (string, on String Array or Text Shape), Span (int, renamed from internal label)
+   - Noah prefers Figma-style labelling: "Count" not "Span"
+3. **Ink/Paper colour controls.** Wire Ink to column rectangles, row rectangles, and text fill. Wire Paper to comp background.
+4. **Font.** Space Grotesk (OFL, sellable). Currently using PP Editorial New Italic.
+5. **Asset Array for images.** Same pattern as String Array; import images, wire Asset Array to an Image Shader. Not yet attempted.
+6. **Publish when animation is in.** `npm run publish -- poster-machine.cv "Grid Study 01"`, copy linked assets, verify control panel renders, commit + push.
 
 ## Layer roadmap (spec is source of truth)
 
-- **L1 grid rig** → publishable "Grid Study 01" (playable grid toy)
-- **L2 type snaps to grid** (Cell + Span controls) → layout toy. FIRST in-app check: are Text Shape bounds readable for Span maths? Fallback: Span = plain scale slider
+- **L1+L2 grid rig + text** — BUILT (columns, rows, text snap to grid). Animation and controls pending.
 - **L3 animation styles** (Rise/Wave/Pulse riding the grid) + font packaging (Space Grotesk, OFL) + $19 Stripe link → the sellable Poster Machine + daily "one word, one poster" content series
 
 ## Standing items (unchanged)
 
+- Real content: do real scenes replace `exp-01..30` slugs or land as new named experiments?
 - Detail-page pixel-push: parked until Noah raises it with a mockup
 - Detail-page mobile: touch-collapse panels, real-device gesture check
 - Times New Roman: reserved for accent typography, Noah will say when
-- Dead code: morph library files (`morph.ts`, `morph-animation.ts`, `transition-orchestrator.ts`, `reverse-morph.ts`) + tests unreferenced; clean up when convenient
+- Dead code: morph library files + tests unreferenced; clean up when convenient
+- Untracked `after-effects/text_you_later_main.aep`: awaiting Noah's call (keep or gitignore)
+- Untracked `.claude/worktrees/`: should probably be gitignored
