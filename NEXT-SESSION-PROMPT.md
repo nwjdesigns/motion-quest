@@ -41,6 +41,12 @@ Last session (2026-07-14) built the full responsive typographic grid system in C
 
 Noah pitched a Figma-like measurement tool for Cavalry (2026-07-14). Research done: hybrid approach (script panel + JS Shape overlay). No competition. Pre-grill. See memory `project_cavalry_measure_tool.md` for full research. Pick up if Noah wants to grill it.
 
+## Parked: Projection mapping (hardware, no build scope)
+
+Noah asked for projector recommendations on 2026-08-15, then asked specifically about the Epson EB-X49 (ruled out: native XGA 1024x768 4:3 gives ~590k effective pixels on 16:9 vs 2.07M for 1080p, so mask edges staircase). Full research + verified SA price anchors in `docs/sessions/2026-08-15-projection-mapping-projector-research.md`.
+
+Headline: buy used ex-corporate business laser with real lens shift, not new consumer. Cheapest next move is a day's rental from a Cape Town AV house before buying. **Unanswered fork:** interior objects/surfaces vs building facade, which is 6,000+ lumens and a different budget entirely. Nothing bought, nothing on the build roadmap. Does not affect the Poster Machine directive above.
+
 ## Standing items (unchanged)
 
 - Real content: do real scenes replace `exp-01..30` slugs or land as new named experiments?
