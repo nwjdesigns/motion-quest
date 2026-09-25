@@ -47,6 +47,10 @@ Noah asked for projector recommendations on 2026-08-15, then asked specifically 
 
 Headline: buy used ex-corporate business laser with real lens shift, not new consumer. Cheapest next move is a day's rental from a Cape Town AV house before buying. **Unanswered fork:** interior objects/surfaces vs building facade, which is 6,000+ lumens and a different budget entirely. Nothing bought, nothing on the build roadmap. Does not affect the Poster Machine directive above.
 
+## Parked: Meet invisibility cloak (idea, 2026-09-25)
+
+Chrome extension: John Cena wave on Google Meet hides you until you stop. All product decisions locked, full spec in `ROADMAP.md` Backlog, log `docs/sessions/2026-09-25-meet-invisibility-cloak-idea.md`. Not the primary here: build home is `EES/BUILDS/`, and Phase 1 is a local look test page. Only start it if Noah asks.
+
 ## Standing items (unchanged)
 
 - Real content: do real scenes replace `exp-01..30` slugs or land as new named experiments?
