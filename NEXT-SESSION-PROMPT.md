@@ -1,4 +1,20 @@
-# Next Session: Poster Machine — Animation + Controls
+# Next Session: Web design pass, a home for every release
+
+## PRIMARY (Noah, 2026-10-01): supersedes the Poster Machine work below
+
+Noah read Marc Lou's playbook (`~/Downloads/Ive-made-3M-with-my-36-startups-Marc-Lou.pdf`) and decided to release the builds on ice one every four weeks, the first release free (which build, and why free: memory `project_ees_release_cadence.md`; it is a private-repo build and stays unnamed in this public repo). Before any release, he wants **a web design pass so there is a housing for everything**: one place every product lives, gets downloaded or bought, and gets linked from launch videos.
+
+**Open first, alone, before any design:** which container is the housing. My read is that it should NOT be this public Motion Quest repo by default: the first release is deliberately kept out of it, and pushing its `main` deploys live. The alternative is a separate EES product site that Motion Quest links to. Champ's parked plan (2026-09-26) named Motion Quest as the download home, so the two need reconciling. Ask in one line with that read, then go.
+
+Then:
+- Load the `design` skill before any pixels. Look calls are Noah's; ship dials or ask.
+- Inventory what the housing must hold with him before laying it out: release candidates are the first release (free, with credits; see the memory above), Champ, Text You Later, Poster Machine. Per product: name, one-line pitch, launch video slot, download or buy button, credits.
+- Still his calls: the name it goes out under (stealth blueprint vs building in public), and whether a paid checkout is designed now or with the first paid release.
+- Picture first: a crude page he can react to early, not a finished build.
+
+---
+
+# (Previous directive) Poster Machine: Animation + Controls
 
 ## Context
 
