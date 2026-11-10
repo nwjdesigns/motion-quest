@@ -12,6 +12,10 @@ Then:
 - Still his calls: the name it goes out under (stealth blueprint vs building in public), and whether a paid checkout is designed now or with the first paid release.
 - Picture first: a crude page he can react to early, not a finished build.
 
+## Parallel lane: heritage motion studies (not the primary)
+
+If Noah opens on the blackletter and weaving series instead, read memory `project_heritage_motion_studies.md` and the log `docs/sessions/2026-10-28-heritage-motion-studies.md` first. Waiting on him: his Figma mapping of the studies, which page colour plays which role, and where the series lives (`cavalry/loom-to-letter/` is untracked in this public repo on purpose). Build Cavalry scenes from his frames; no people or animals in any frame.
+
 ---
 
 # (Previous directive) Poster Machine: Animation + Controls
