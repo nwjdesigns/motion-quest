@@ -16,6 +16,10 @@ Then:
 
 If Noah opens on the blackletter and weaving series instead, read memory `project_heritage_motion_studies.md` and the log `docs/sessions/2026-10-28-heritage-motion-studies.md` first. Waiting on him: his Figma mapping of the studies, which page colour plays which role, and where the series lives (`cavalry/loom-to-letter/` is untracked in this public repo on purpose). Build Cavalry scenes from his frames; no people or animals in any frame.
 
+## Parallel lane: Instagram content ideas (not the primary)
+
+If Noah opens on content ideas or "mini designs", read `docs/sessions/2026-11-10-short-form-format-research.md` first. It holds a top 10 of performing videos in the niche (TikTok counts), the patterns, and how to re-run the pull. Waiting on him: whether we make our own mini designs or work from the list, and what the mini designs are (he originates; pressure-test, do not pitch). Nothing on the list has been watched. If more research is wanted, name the hashtags before pulling, and go to TikTok before asking him to sign in to anything.
+
 ---
 
 # (Previous directive) Poster Machine: Animation + Controls
