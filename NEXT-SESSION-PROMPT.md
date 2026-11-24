@@ -14,7 +14,7 @@ Then:
 
 ## Parallel lane: heritage motion studies (not the primary)
 
-If Noah opens on the blackletter and weaving series instead, read memory `project_heritage_motion_studies.md` and the log `docs/sessions/2026-10-28-heritage-motion-studies.md` first. Waiting on him: his Figma mapping of the studies, which page colour plays which role, and where the series lives (`cavalry/loom-to-letter/` is untracked in this public repo on purpose). Build Cavalry scenes from his frames; no people or animals in any frame.
+If Noah opens on the blackletter and weaving series instead, read memory `project_heritage_motion_studies.md` and the logs `docs/sessions/2026-10-28-heritage-motion-studies.md` and `docs/sessions/2026-11-11-type-archive-spec-and-sourcing.md` first. Since 2026-11-11 the series is a self-initiated spec for the Fell types (17th century, "source is old, handling is new"), with sources in `cavalry/loom-to-letter/sources/SOURCES.md`. Also waiting on him: a roman to pair with the blackletter fonts, and whether the Luttrell palette stays. The National Typefounding Collection design jam is separate and lives outside this repo (memory `project-ntc-design-jam.md`). Waiting on him: his Figma mapping of the studies, which page colour plays which role, and where the series lives (`cavalry/loom-to-letter/` is untracked in this public repo on purpose). Build Cavalry scenes from his frames; no people or animals in any frame.
 
 ## Parallel lane: Instagram content ideas (not the primary)
 
